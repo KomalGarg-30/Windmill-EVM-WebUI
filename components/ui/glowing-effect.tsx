@@ -1,6 +1,6 @@
 'use client';
 
-import React, { memo } from 'react';
+import { memo } from 'react';
 
 interface GlowingEffectProps {
   blur?: number;
@@ -16,9 +16,7 @@ interface GlowingEffectProps {
 }
 
 const GlowingEffect = memo(
-  ({
-    disabled = true,
-  }: GlowingEffectProps) => {
+  ({}: GlowingEffectProps) => {
     return null;
   }
 );

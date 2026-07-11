@@ -143,7 +143,7 @@ export const MobileNavHeader = ({ children, className }: MobileNavHeaderProps) =
   );
 };
 
-export const MobileNavMenu = ({ children, className, isOpen, onClose }: MobileNavMenuProps) => {
+export const MobileNavMenu = ({ children, className, isOpen }: MobileNavMenuProps) => {
   if (!isOpen) return null;
 
   return (

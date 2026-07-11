@@ -3,12 +3,10 @@
 import React from 'react';
 import Link from 'next/link';
 import { useScrollReveal } from '@/hooks/useScrollReveal';
-import { useWallet } from '@/context/WalletContext';
 import StatsPanel from '@/components/landing/StatsPanel';
 
 export default function HeroSection() {
   const containerRef = useScrollReveal<HTMLDivElement>({ threshold: 0.05 });
-  const { isConnected, address, setWalletModalOpen } = useWallet();
 
   return (
     <section
