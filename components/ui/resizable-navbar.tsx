@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useRef, useState, useEffect } from 'react';
+import Link from 'next/link';
 import { cn } from '@/lib/utils';
 
 interface NavbarProps {
@@ -98,7 +99,7 @@ export const NavItems = ({ items, className, onItemClick }: NavItemsProps) => {
       )}
     >
       {items.map((item, idx) => (
-        <a
+        <Link
           onMouseEnter={() => setHovered(idx)}
           onClick={onItemClick}
           className="relative px-4 py-2 text-neutral-400 hover:text-black transition-colors duration-200 pointer-events-auto"
@@ -109,7 +110,7 @@ export const NavItems = ({ items, className, onItemClick }: NavItemsProps) => {
             <div className="absolute inset-0 h-full w-full rounded-full bg-neutral-100/70 z-0 animate-fade-in" />
           )}
           <span className="relative z-10 uppercase tracking-wider text-[10px] font-bold">{item.name}</span>
-        </a>
+        </Link>
       ))}
     </div>
   );
@@ -175,10 +176,10 @@ export const MobileNavToggle = ({ isOpen, onClick }: { isOpen: boolean; onClick:
 
 export const NavbarLogo = () => {
   return (
-    <a href="#" className="relative z-20 flex items-center space-x-2 px-2 py-1 text-sm font-bold text-black">
+    <Link href="/" className="relative z-20 flex items-center space-x-2 px-2 py-1 text-sm font-bold text-black">
       <div className="flex h-6 w-6 items-center justify-center rounded-full bg-black text-white text-xs">W</div>
       <span className="font-semibold text-black">WINDMILL</span>
-    </a>
+    </Link>
   );
 };
 

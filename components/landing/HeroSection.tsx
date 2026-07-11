@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import Link from 'next/link';
 import { useScrollReveal } from '@/hooks/useScrollReveal';
 import { useWallet } from '@/context/WalletContext';
 import StatsPanel from '@/components/landing/StatsPanel';
@@ -44,18 +45,18 @@ export default function HeroSection() {
 
         {/* CTAs */}
         <div className="text-reveal-4 flex flex-col sm:flex-row gap-4 items-center justify-center mb-10 w-full sm:w-auto">
-          <a
+          <Link
             href="/dashboard"
             className="btn-premium-dark w-full sm:w-auto hover:scale-105 active:scale-[0.98] transition-all cursor-pointer shadow-sm"
           >
             Launch Exchange
-          </a>
-          <a
+          </Link>
+          <Link
             href="/docs"
             className="btn-premium-light w-full sm:w-auto cursor-pointer"
           >
             Docs / API Reference
-          </a>
+          </Link>
         </div>
 
         {/* 3D stats panel exactly as depicted */}
