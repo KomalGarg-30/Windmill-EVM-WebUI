@@ -35,6 +35,7 @@ export default function WalletModal() {
         <div className="mb-6 flex items-center justify-between">
           <h3 className="text-xl font-bold tracking-tight">Connect a Wallet</h3>
           <button
+            type="button"
             onClick={() => !isConnecting && setWalletModalOpen(false)}
             disabled={isConnecting}
             className="flex h-8 w-8 items-center justify-center rounded-full bg-neutral-100 text-neutral-500 hover:bg-neutral-200 hover:text-black transition-colors disabled:opacity-50"
@@ -64,6 +65,7 @@ export default function WalletModal() {
             {wallets.map((wallet) => (
               <button
                 key={wallet.name}
+                type="button"
                 onClick={() => connectWallet(wallet.name)}
                 className="flex w-full items-center gap-4 rounded-2xl border border-neutral-100 bg-neutral-50/50 p-4 text-left hover:bg-neutral-50 hover:border-neutral-300 transition-all duration-200 group active:scale-[0.99]"
               >

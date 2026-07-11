@@ -56,6 +56,7 @@ export default function Navbar() {
                 {/* Network select indicator */}
                 <div className="relative">
                   <button
+                    type="button"
                     onClick={() => setNetworkDropdownOpen(!networkDropdownOpen)}
                     className="flex items-center gap-1.5 rounded-full border border-neutral-200 bg-neutral-50 px-3 py-1.5 text-[10px] font-bold hover:bg-neutral-100 transition-colors uppercase tracking-wider text-black cursor-pointer"
                   >
@@ -67,6 +68,7 @@ export default function Navbar() {
                       {networks.map((net) => (
                         <button
                           key={net}
+                          type="button"
                           onClick={() => {
                             switchNetwork(net);
                             setNetworkDropdownOpen(false);
