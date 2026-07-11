@@ -2,7 +2,6 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
 import { useWallet } from '@/context/WalletContext';
 import {
   Navbar as BaseNavbar,
@@ -16,7 +15,6 @@ import {
 } from '@/components/ui/resizable-navbar';
 
 export default function Navbar() {
-  const pathname = usePathname();
   const { isConnected, address, network, setWalletModalOpen, disconnectWallet, switchNetwork } = useWallet();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [networkDropdownOpen, setNetworkDropdownOpen] = useState(false);

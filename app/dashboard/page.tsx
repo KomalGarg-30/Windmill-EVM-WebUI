@@ -18,7 +18,7 @@ interface Order {
 }
 
 export default function DashboardPage() {
-  const { isConnected, address, setWalletModalOpen } = useWallet();
+  const { isConnected, setWalletModalOpen } = useWallet();
   const [orderType, setOrderType] = useState<'Buy' | 'Sell'>('Buy');
   const [tokenIn, setTokenIn] = useState('WETH');
   const [tokenOut, setTokenOut] = useState('USDC');
@@ -28,32 +28,7 @@ export default function DashboardPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Initial mock orders
-  const [orders, setOrders] = useState<Order[]>([
-    {
-      id: 2884,
-      type: 'Buy',
-      tokenIn: 'WETH',
-      tokenOut: 'USDC',
-      amount: 1.5,
-      startPrice: 3200,
-      currentPrice: 3200,
-      slope: -0.15,
-      createdAt: Date.now() - 30000,
-      active: true,
-    },
-    {
-      id: 1940,
-      type: 'Sell',
-      tokenIn: 'USDC',
-      tokenOut: 'WETH',
-      amount: 4500,
-      startPrice: 3000,
-      currentPrice: 3000,
-      slope: 0.1,
-      createdAt: Date.now() - 60000,
-      active: true,
-    },
-  ]);
+  const [orders, setOrders] = useState<Order[]>([]);
 
   const [settledHistory, setSettledHistory] = useState([
     { id: 182, pair: 'WETH/USDC', amount: '0.80', price: '$3,150.00', age: '15 mins ago' },
@@ -63,6 +38,36 @@ export default function DashboardPage() {
   // Dynamic price calculation loop representing actual curve formulas:
   // price(t) = startPrice + slope * deltaT
   useEffect(() => {
+    // Set initial mock orders on client mount asynchronously to keep rendering pure and avoid cascading renders
+    const initTimeout = setTimeout(() => {
+      setOrders([
+        {
+          id: 2884,
+          type: 'Buy',
+          tokenIn: 'WETH',
+          tokenOut: 'USDC',
+          amount: 1.5,
+          startPrice: 3200,
+          currentPrice: 3200,
+          slope: -0.15,
+          createdAt: Date.now() - 30000,
+          active: true,
+        },
+        {
+          id: 1940,
+          type: 'Sell',
+          tokenIn: 'USDC',
+          tokenOut: 'WETH',
+          amount: 4500,
+          startPrice: 3000,
+          currentPrice: 3000,
+          slope: 0.1,
+          createdAt: Date.now() - 60000,
+          active: true,
+        },
+      ]);
+    }, 0);
+
     const timer = setInterval(() => {
       setOrders((prevOrders) =>
         prevOrders.map((ord) => {
@@ -76,7 +81,10 @@ export default function DashboardPage() {
       );
     }, 1000);
 
-    return () => clearInterval(timer);
+    return () => {
+      clearTimeout(initTimeout);
+      clearInterval(timer);
+    };
   }, []);
 
   const handleCreateOrder = (e: React.FormEvent) => {
