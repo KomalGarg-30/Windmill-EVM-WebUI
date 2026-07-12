@@ -8,6 +8,10 @@
 @theme inline {
   --color-background: #ffffff;
   --color-foreground: #0a0a0a;
+  --color-brand: #ffc517;
+  --color-brand-dark: #e5b015;
+  --color-brand-green: #228b22;
+  --color-brand-green-light: #22c55e;
   --font-sans: var(--font-sans);
   --font-heading: var(--font-sans);
   --color-sidebar-ring: var(--sidebar-ring);
