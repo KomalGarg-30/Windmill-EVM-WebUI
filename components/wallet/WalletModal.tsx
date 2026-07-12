@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useWallet } from '@/context/WalletContext';
 
 export default function WalletModal() {
@@ -11,6 +11,38 @@ export default function WalletModal() {
     connectingWallet,
     connectWallet,
   } = useWallet();
+
+  const modalRef = useRef<HTMLDivElement>(null);
+  const titleId = 'wallet-modal-title';
+
+  useEffect(() => {
+    if (!walletModalOpen) return;
+    modalRef.current?.focus();
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && !isConnecting) {
+        setWalletModalOpen(false);
+      }
+      if (e.key === 'Tab' && modalRef.current) {
+        const focusable = modalRef.current.querySelectorAll<HTMLElement>(
+          'button:not([disabled]), [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+        );
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [walletModalOpen, isConnecting, setWalletModalOpen]);
 
   if (!walletModalOpen) return null;
 
@@ -27,19 +59,28 @@ export default function WalletModal() {
       <div
         className="absolute inset-0 bg-black/40 backdrop-blur-sm"
         onClick={() => !isConnecting && setWalletModalOpen(false)}
+        aria-hidden="true"
       />
 
       {/* Modal Card */}
-      <div className="relative w-full max-w-md overflow-hidden rounded-3xl border border-neutral-200 bg-white p-6 text-black shadow-2xl transition-all duration-300">
+      <div
+        ref={modalRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={titleId}
+        tabIndex={-1}
+        className="relative w-full max-w-md overflow-hidden rounded-3xl border border-neutral-200 bg-white p-6 text-black shadow-2xl transition-all duration-300"
+      >
         {/* Modal Header */}
         <div className="mb-6 flex items-center justify-between">
-          <h3 className="text-xl font-bold tracking-tight">Connect a Wallet</h3>
+          <h3 id={titleId} className="text-xl font-bold tracking-tight">Connect a Wallet</h3>
           <button
             onClick={() => !isConnecting && setWalletModalOpen(false)}
             disabled={isConnecting}
+            aria-label="Close wallet connection modal"
             className="flex h-8 w-8 items-center justify-center rounded-full bg-neutral-100 text-neutral-500 hover:bg-neutral-200 hover:text-black transition-colors disabled:opacity-50"
           >
-            ✕
+            <span aria-hidden="true">✕</span>
           </button>
         </div>
 
