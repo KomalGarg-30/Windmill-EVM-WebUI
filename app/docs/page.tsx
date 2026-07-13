@@ -18,7 +18,7 @@ export default function DocsPage() {
           <section>
             <h2 className="text-lg font-bold text-black mb-2">Price Curve Mechanics</h2>
             <p>
-              Each order is characterized by a starting price `startPrice` and a `slope` representing the change in price per second. Prices are represented in **RAY** (1e27) units for high precision arithmetic:
+              Each order is characterized by a starting price <code>startPrice</code> and a <code>slope</code> representing the change in price per second. Prices are represented in <strong>RAY</strong> (1e27) units for high precision arithmetic:
             </p>
             <div className="bg-neutral-50 border border-neutral-100 p-4 rounded-xl font-mono text-xs text-black my-3">
               price(t) = startPrice + slope * (t - createdAt)
@@ -34,7 +34,7 @@ export default function DocsPage() {
           <section>
             <h2 className="text-lg font-bold text-black mb-2">Settlement & Solver Reward</h2>
             <p>
-              When a match is settled, a flat **0.1% keeper fee** is calculated based on the executed quantity. This fee is automatically transferred to the solver address (`msg.sender`) to cover gas overheads and incentivize block sweeps.
+              When a match is settled, a flat <strong>0.1% keeper fee</strong> is calculated based on the executed quantity. This fee is automatically transferred to the solver address (<code>msg.sender</code>) to cover gas overheads and incentivize block sweeps.
             </p>
           </section>
 
