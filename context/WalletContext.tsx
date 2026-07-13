@@ -66,19 +66,21 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
           setWalletModalOpen,
           connectWallet,
           disconnectWallet,
-          switchNetwork,
-        }),
-        [
+    <WalletContext.Provider
+      value={useMemo(
+        () => ({
           isConnected,
           isConnecting,
           connectingWallet,
           address,
           network,
           walletModalOpen,
+          setWalletModalOpen,
           connectWallet,
           disconnectWallet,
           switchNetwork,
-        ]
+        }),
+        [isConnected, isConnecting, connectingWallet, address, network, walletModalOpen, connectWallet, disconnectWallet, switchNetwork]
       )}
     >
       {children}
