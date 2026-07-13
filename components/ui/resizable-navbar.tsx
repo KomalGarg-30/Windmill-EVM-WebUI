@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
 
@@ -185,7 +185,7 @@ export const NavbarLogo = () => {
 
 export const NavbarButton = ({
   href,
-  as: Tag = 'a',
+  as: Tag = href ? 'a' : 'button',
   children,
   className,
   variant = 'primary',
@@ -207,13 +207,21 @@ export const NavbarButton = ({
     gradient: 'bg-gradient-to-b from-neutral-800 to-black text-white shadow-sm border border-transparent',
   };
 
+  const TagElement = Tag as React.ComponentType<{
+    href?: string;
+    type?: string;
+    className?: string;
+    children?: React.ReactNode;
+  }>;
+
   return (
-    <Tag
-      href={href || undefined}
+    <TagElement
+      href={Tag === 'a' ? href || undefined : undefined}
+      type={Tag === 'button' ? 'button' : undefined}
       className={cn(baseStyles, variantStyles[variant], className)}
       {...props}
     >
       {children}
-    </Tag>
+    </TagElement>
   );
 };
