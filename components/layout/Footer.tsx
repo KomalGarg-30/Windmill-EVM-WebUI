@@ -1,3 +1,5 @@
+import Link from 'next/link';
+
 export default function Footer() {
   return (
     <footer className="bg-neutral-950 text-neutral-400 py-16 border-t border-neutral-800">
@@ -5,14 +7,14 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-10 md:gap-8 mb-12">
           {/* Brand Info */}
           <div className="flex flex-col gap-4">
-            <a href="#" className="flex items-center gap-2">
+            <Link href="/" className="flex items-center gap-2">
               <div className="flex h-8 w-8 items-center justify-center rounded-full bg-white text-black font-bold text-base">
                 W
               </div>
               <span className="font-sans text-lg font-bold tracking-tight text-white">
                 WINDMILL
               </span>
-            </a>
+            </Link>
             <p className="text-sm leading-relaxed text-neutral-400">
               Next-generation EVM matchmaking protocol. Seamless dynamic pricing, autonomous matching, and instant on-chain settlements.
             </p>
