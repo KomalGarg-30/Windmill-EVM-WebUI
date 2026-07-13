@@ -54,7 +54,12 @@ export default function WalletModal() {
   ];
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="wallet-modal-title"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4"
+    >
       {/* Backdrop */}
       <div
         className="absolute inset-0 bg-black/40 backdrop-blur-sm"
@@ -75,6 +80,7 @@ export default function WalletModal() {
         <div className="mb-6 flex items-center justify-between">
           <h3 id={titleId} className="text-xl font-bold tracking-tight">Connect a Wallet</h3>
           <button
+            type="button"
             onClick={() => !isConnecting && setWalletModalOpen(false)}
             disabled={isConnecting}
             aria-label="Close wallet connection modal"
@@ -105,6 +111,7 @@ export default function WalletModal() {
             {wallets.map((wallet) => (
               <button
                 key={wallet.name}
+                type="button"
                 onClick={() => connectWallet(wallet.name)}
                 className="flex w-full items-center gap-4 rounded-2xl border border-neutral-100 bg-neutral-50/50 p-4 text-left hover:bg-neutral-50 hover:border-neutral-300 transition-all duration-200 group active:scale-[0.99]"
               >
