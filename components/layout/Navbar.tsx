@@ -127,9 +127,9 @@ export default function Navbar() {
             className="bg-white/95 border border-neutral-100/50 backdrop-blur-xl p-6 rounded-2xl shadow-xl mt-4"
           >
             <div className="flex flex-col gap-4 w-full">
-              {navItems.map((item, idx) => (
+              {navItems.map((item) => (
                 <Link
-                  key={`mobile-link-${idx}`}
+                  key={item.name}
                   href={item.link}
                   onClick={() => setIsMobileMenuOpen(false)}
                   className="text-neutral-600 hover:text-black font-semibold text-sm transition-colors py-1"

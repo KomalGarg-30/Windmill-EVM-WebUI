@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useWallet } from '@/context/WalletContext';
 
 export default function WalletModal() {
@@ -12,6 +12,16 @@ export default function WalletModal() {
     connectWallet,
   } = useWallet();
 
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && !isConnecting) setWalletModalOpen(false);
+    };
+    if (walletModalOpen) {
+      document.addEventListener('keydown', handleEscape);
+      return () => document.removeEventListener('keydown', handleEscape);
+    }
+  }, [walletModalOpen, isConnecting, setWalletModalOpen]);
+
   if (!walletModalOpen) return null;
 
   const wallets = [
@@ -22,7 +32,12 @@ export default function WalletModal() {
   ];
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="wallet-modal-title"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4"
+    >
       {/* Backdrop */}
       <div
         className="absolute inset-0 bg-black/40 backdrop-blur-sm"
@@ -33,7 +48,7 @@ export default function WalletModal() {
       <div className="relative w-full max-w-md overflow-hidden rounded-3xl border border-neutral-200 bg-white p-6 text-black shadow-2xl transition-all duration-300">
         {/* Modal Header */}
         <div className="mb-6 flex items-center justify-between">
-          <h3 className="text-xl font-bold tracking-tight">Connect a Wallet</h3>
+          <h3 id="wallet-modal-title" className="text-xl font-bold tracking-tight">Connect a Wallet</h3>
           <button
             type="button"
             onClick={() => !isConnecting && setWalletModalOpen(false)}

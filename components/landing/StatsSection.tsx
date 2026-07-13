@@ -14,7 +14,7 @@ export default function StatsSection() {
     >
       <div className="mx-auto max-w-4xl px-6 md:px-8">
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
-          {STATS.map((stat, idx) => (
+          {STATS.filter((stat) => !stat.illustrative).map((stat, idx) => (
             <div
               key={stat.label}
               data-reveal
