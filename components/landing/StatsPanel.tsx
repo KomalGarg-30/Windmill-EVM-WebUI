@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import Link from 'next/link';
 
 const glass = 'bg-white/[0.15] backdrop-blur-[32px] border border-white/30 shadow-[0_8px_32px_rgba(0,0,0,0.10)] relative overflow-hidden before:absolute before:inset-0 before:pointer-events-none before:bg-gradient-to-b before:from-white/[0.15] before:to-transparent';
 
@@ -9,7 +10,7 @@ const innerGlass = 'bg-white/[0.12] backdrop-blur-[16px] border border-white/20'
 const glassCard = (className = '') =>
   `${glass} rounded-[28px] ${className}`;
 
-function Sparkline({ data, color = '#0a0a0a' }: { data: number[]; color?: string }) {
+function Sparkline({ data, color = '#0a0a0a', id }: { data: number[]; color?: string; id: string }) {
   const w = 120;
   const h = 32;
   const max = Math.max(...data);
@@ -23,7 +24,7 @@ function Sparkline({ data, color = '#0a0a0a' }: { data: number[]; color?: string
   return (
     <svg viewBox={`0 0 ${w} ${h}`} className="w-full h-full" fill="none">
       <defs>
-        <linearGradient id={`spark-${color.replace('#', '')}`} x1="0" y1="0" x2="0" y2="1">
+        <linearGradient id={`spark-${id}`} x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stopColor={color} stopOpacity="0.3" />
           <stop offset="100%" stopColor={color} stopOpacity="0" />
         </linearGradient>
@@ -31,7 +32,7 @@ function Sparkline({ data, color = '#0a0a0a' }: { data: number[]; color?: string
       <polyline points={pts.join(' ')} stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none" opacity="0.6" />
       <polygon
         points={`${pts.join(' ')},${w},${h} 0,${h}`}
-        fill={`url(#spark-${color.replace('#', '')})`}
+        fill={`url(#spark-${id})`}
       />
     </svg>
   );
@@ -127,7 +128,7 @@ export default function StatsPanel() {
                   </div>
                   <span className="text-[9px] text-neutral-400">{s.sub.replace(/^[+0-9.%]+\s/, '')}</span>
                   <div className="mt-2 h-8">
-                    <Sparkline data={[22, 28, 25, 35, 30, 42, 38, 45, 40, 48, 52, 50, 55, 58]} />
+                    <Sparkline id={s.label.replace(/\s+/g, '-')} data={[22, 28, 25, 35, 30, 42, 38, 45, 40, 48, 52, 50, 55, 58]} />
                   </div>
                 </div>
               ))}
@@ -235,9 +236,13 @@ export default function StatsPanel() {
 
             <div className="flex items-center justify-between pt-1">
               <span className="text-[9px] text-neutral-400">{statsData[1].sub}</span>
-              <button className="px-5 py-2 rounded-full bg-neutral-900 text-white text-[10px] font-bold hover:bg-neutral-800 transition-all shadow-lg active:scale-[0.97] cursor-pointer">
+              <Link
+                href="/dashboard"
+                type="button"
+                className="px-5 py-2 rounded-full bg-neutral-900 text-white text-[10px] font-bold hover:bg-neutral-800 transition-all shadow-lg active:scale-[0.97] cursor-pointer inline-block"
+              >
                 View Full Dashboard →
-              </button>
+              </Link>
             </div>
           </div>
         </div>
@@ -250,7 +255,7 @@ export default function StatsPanel() {
               {[
                 { name: 'Ethereum', status: 'Connected', latency: '12ms', ok: true },
                 { name: 'Base', status: 'Connected', latency: '24ms', ok: true },
-                { name: 'Polygon', status: 'Syncing', latency: '48ms', ok: true },
+                { name: 'Polygon', status: 'Syncing', latency: '48ms', ok: false },
                 { name: 'Arbitrum', status: 'Connected', latency: '18ms', ok: true },
               ].map((net) => (
                 <div key={net.name} className="flex items-center justify-between">

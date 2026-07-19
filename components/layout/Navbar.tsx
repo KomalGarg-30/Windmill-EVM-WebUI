@@ -50,6 +50,7 @@ export default function Navbar() {
     <div className="flex items-center gap-2">
       <div className="relative">
         <button
+          type="button"
           onClick={(e) => { e.stopPropagation(); setNetworkOpen((o) => !o); }}
           className="flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-black/70 hover:text-black transition-colors cursor-pointer"
         >
@@ -61,6 +62,7 @@ export default function Navbar() {
             {networks.map((net) => (
               <button
                 key={net}
+                type="button"
                 onClick={() => { switchNetwork(net); setNetworkOpen(false); }}
                 className="w-full text-left rounded-xl px-3 py-1.5 text-[10px] font-semibold text-black/70 hover:text-black hover:bg-white/40 transition-colors"
               >
@@ -71,14 +73,16 @@ export default function Navbar() {
         )}
       </div>
       <button
+        type="button"
         onClick={disconnectWallet}
         className="rounded-full px-5 py-2 text-xs font-bold text-white bg-black hover:bg-neutral-800 transition-all border-none shadow-lg active:scale-[0.97] cursor-pointer"
       >
-        {address?.slice(0, 6)}...{address?.slice(-4)}
+        {address ? `${address.slice(0, 6)}...${address.slice(-4)}` : 'Connected'}
       </button>
     </div>
   ) : (
     <button
+      type="button"
       onClick={() => setWalletModalOpen(true)}
       className="rounded-full px-5 py-2 text-xs font-bold text-white bg-black hover:bg-neutral-800 transition-all border-none shadow-lg active:scale-[0.97] cursor-pointer"
     >
@@ -133,6 +137,7 @@ export default function Navbar() {
           </Link>
 
           <button
+            type="button"
             onClick={() => setMobileOpen((o) => !o)}
             className="p-1 relative z-10 cursor-pointer"
             aria-label="Toggle menu"
@@ -172,14 +177,16 @@ export default function Navbar() {
                     <span className="text-black/50 uppercase tracking-wider">{network}</span>
                   </div>
                   <button
+                    type="button"
                     onClick={() => { disconnectWallet(); setMobileOpen(false); }}
                     className="w-full text-center py-2.5 rounded-xl text-xs font-bold text-white bg-black hover:bg-neutral-800 transition-all border-none cursor-pointer"
                   >
-                    Disconnect {address?.slice(0, 6)}...{address?.slice(-4)}
+                    Disconnect {address ? `${address.slice(0, 6)}...${address.slice(-4)}` : 'Connected'}
                   </button>
                 </div>
               ) : (
                 <button
+                  type="button"
                   onClick={() => { setWalletModalOpen(true); setMobileOpen(false); }}
                   className="w-full text-center py-2.5 rounded-xl text-xs font-bold text-white bg-black hover:bg-neutral-800 transition-all border-none cursor-pointer"
                 >
