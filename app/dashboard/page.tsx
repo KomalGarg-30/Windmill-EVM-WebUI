@@ -5,6 +5,7 @@ import { useWallet } from '@/context/WalletContext';
 import { useContract } from '@/hooks/useContract';
 import { SUPPORTED_TOKENS, getTokenAddress, SUPPORTED_CHAINS, getExplorerTxUrl } from '@/lib/contractConfig';
 import WalletModal from '@/components/wallet/WalletModal';
+import { Zap, X } from 'lucide-react';
 
 interface Order {
   id: number;
@@ -677,16 +678,16 @@ export default function DashboardPage() {
                           <button
                             onClick={() => handleCancelOrder(order.id)}
                             disabled={!isConnected}
-                            className="rounded-full border border-red-200 bg-white px-4 py-2 text-[10px] font-bold text-red-600 hover:border-red-400 hover:bg-red-50 transition-colors shrink-0 disabled:opacity-40 cursor-pointer"
+                            className="rounded-full border border-red-200 bg-white px-4 py-2 text-[10px] font-bold text-red-600 hover:border-red-400 hover:bg-red-50 transition-colors shrink-0 disabled:opacity-40 cursor-pointer flex items-center gap-1"
                           >
-                            Cancel ✕
+                            Cancel <X className="w-3 h-3" />
                           </button>
                           <button
                             onClick={() => handleSimulateSweep(order.id)}
                             disabled={!isConnected}
-                            className="rounded-full border border-black/10 bg-white px-4 py-2 text-[10px] font-bold text-black hover:border-black transition-colors shrink-0 disabled:opacity-40 cursor-pointer"
+                            className="rounded-full border border-black/10 bg-white px-4 py-2 text-[10px] font-bold text-black hover:border-black transition-colors shrink-0 disabled:opacity-40 cursor-pointer flex items-center gap-1"
                           >
-                            Simulate Match ⚡
+                            Simulate Match <Zap className="w-3 h-3 fill-current" />
                           </button>
                         </div>
                       </div>

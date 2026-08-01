@@ -4,6 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import { useScrollReveal } from '@/hooks/useScrollReveal';
 import StatsPanel from '@/components/landing/StatsPanel';
+import { Zap } from 'lucide-react';
 
 export default function HeroSection() {
   const containerRef = useScrollReveal<HTMLDivElement>({ threshold: 0.05 });
@@ -103,7 +104,7 @@ export default function HeroSection() {
               {/* Connecting Match Action */}
               <div className="flex flex-col items-center justify-center gap-1 shrink-0">
                 <div className="h-8 w-8 rounded-full bg-black text-white flex items-center justify-center shadow-lg font-mono font-bold text-xs">
-                  ⚡
+                  <Zap className="w-3.5 h-3.5 fill-current text-white" />
                 </div>
                 <span className="text-[9px] font-bold tracking-widest text-neutral-800 uppercase mt-1">MATCH</span>
               </div>

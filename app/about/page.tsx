@@ -1,5 +1,6 @@
 import WalletModal from '@/components/wallet/WalletModal';
 import Link from 'next/link';
+import { Lock, Zap, Link2, User, FileText, Bot, ArrowRight } from 'lucide-react';
 
 export default function AboutPage() {
   return (
@@ -54,9 +55,9 @@ export default function AboutPage() {
             Protocol Pillars
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-            <div className="rounded-2xl border border-neutral-100 bg-neutral-50/30 p-6 hover:-translate-y-1 hover:shadow-md hover:border-neutral-200 transition-all duration-300">
-              <div className="h-10 w-10 rounded-xl bg-black text-white flex items-center justify-center text-lg mb-4">
-                🔒
+            <div className="rounded-2xl border border-neutral-100 bg-neutral-50/30 p-6 hover:-translate-y-1 hover:shadow-md hover:border-neutral-200 transition-all duration-300 flex flex-col items-start">
+              <div className="h-10 w-10 rounded-xl bg-black text-white flex items-center justify-center mb-4">
+                <Lock className="w-5 h-5" />
               </div>
               <h3 className="text-base font-bold text-black mb-2">Resilient Infrastructure</h3>
               <p className="text-xs text-neutral-500 leading-relaxed">
@@ -64,9 +65,9 @@ export default function AboutPage() {
                 to production networks. ReentrancyGuard, CEI pattern, and formal verification.
               </p>
             </div>
-            <div className="rounded-2xl border border-neutral-100 bg-neutral-50/30 p-6 hover:-translate-y-1 hover:shadow-md hover:border-neutral-200 transition-all duration-300">
-              <div className="h-10 w-10 rounded-xl bg-black text-white flex items-center justify-center text-lg mb-4">
-                ⚡
+            <div className="rounded-2xl border border-neutral-100 bg-neutral-50/30 p-6 hover:-translate-y-1 hover:shadow-md hover:border-neutral-200 transition-all duration-300 flex flex-col items-start">
+              <div className="h-10 w-10 rounded-xl bg-black text-white flex items-center justify-center mb-4">
+                <Zap className="w-5 h-5" />
               </div>
               <h3 className="text-base font-bold text-black mb-2">Keeper Ecosystem</h3>
               <p className="text-xs text-neutral-500 leading-relaxed">
@@ -74,9 +75,9 @@ export default function AboutPage() {
                 settlement operations. Keepers earn 0.1% per match to offset gas costs.
               </p>
             </div>
-            <div className="rounded-2xl border border-neutral-100 bg-neutral-50/30 p-6 hover:-translate-y-1 hover:shadow-md hover:border-neutral-200 transition-all duration-300">
-              <div className="h-10 w-10 rounded-xl bg-black text-white flex items-center justify-center text-lg mb-4">
-                🔗
+            <div className="rounded-2xl border border-neutral-100 bg-neutral-50/30 p-6 hover:-translate-y-1 hover:shadow-md hover:border-neutral-200 transition-all duration-300 flex flex-col items-start">
+              <div className="h-10 w-10 rounded-xl bg-black text-white flex items-center justify-center mb-4">
+                <Link2 className="w-5 h-5" />
               </div>
               <h3 className="text-base font-bold text-black mb-2">Multi-Chain Native</h3>
               <p className="text-xs text-neutral-500 leading-relaxed">
@@ -92,24 +93,25 @@ export default function AboutPage() {
           <h2 className="text-lg font-bold text-black mb-4">Protocol Architecture</h2>
           <div className="flex flex-col sm:flex-row items-center justify-between gap-6 text-center">
             {[
-              { icon: '👤', title: 'Users', desc: 'Create orders with dynamic pricing curves via the WebUI' },
-              { icon: '→', title: '', desc: '' },
-              { icon: '📜', title: 'Smart Contract', desc: 'WindmillExchange manages orders, matching, and settlement' },
-              { icon: '→', title: '', desc: '' },
-              { icon: '🤖', title: 'Keepers', desc: 'Autonomous nodes scan and match compatible orders' },
-            ].map((item, idx) =>
-              item.title ? (
+              { icon: User, title: 'Users', desc: 'Create orders with dynamic pricing curves via the WebUI' },
+              { icon: null, title: '', desc: '' },
+              { icon: FileText, title: 'Smart Contract', desc: 'WindmillExchange manages orders, matching, and settlement' },
+              { icon: null, title: '', desc: '' },
+              { icon: Bot, title: 'Keepers', desc: 'Autonomous nodes scan and match compatible orders' },
+            ].map((item, idx) => {
+              const Icon = item.icon;
+              return item.title && Icon ? (
                 <div key={idx} className="flex flex-col items-center gap-2">
-                  <div className="h-12 w-12 rounded-full bg-black text-white flex items-center justify-center text-xl">
-                    {item.icon}
+                  <div className="h-12 w-12 rounded-full bg-black text-white flex items-center justify-center">
+                    <Icon className="w-5 h-5" />
                   </div>
                   <span className="text-xs font-bold text-black">{item.title}</span>
                   <span className="text-[9px] text-neutral-400 max-w-[140px]">{item.desc}</span>
                 </div>
               ) : (
-                <span key={idx} className="text-neutral-300 font-mono text-xl hidden sm:block">→</span>
-              )
-            )}
+                <ArrowRight key={idx} className="text-neutral-300 w-5 h-5 hidden sm:block" />
+              );
+            })}
           </div>
         </div>
 

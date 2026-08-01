@@ -2,6 +2,7 @@
 
 import React, { useEffect } from 'react';
 import { useWallet } from '@/context/WalletContext';
+import { Wallet, Shield, Sparkles, Link2, Key, ArrowRight, X } from 'lucide-react';
 
 export default function WalletModal() {
   const {
@@ -25,10 +26,10 @@ export default function WalletModal() {
   if (!walletModalOpen) return null;
 
   const wallets = [
-    { name: 'MetaMask', icon: '🦊', desc: 'Popular EVM browser extension' },
-    { name: 'Coinbase Wallet', icon: '🛡️', desc: 'Secure self-custody wallet' },
-    { name: 'Rainbow', icon: '🌈', desc: 'Fun and easy Ethereum wallet' },
-    { name: 'WalletConnect', icon: '🔌', desc: 'Scan with mobile wallet' },
+    { name: 'MetaMask', icon: Wallet, desc: 'Popular EVM browser extension' },
+    { name: 'Coinbase Wallet', icon: Shield, desc: 'Secure self-custody wallet' },
+    { name: 'Rainbow', icon: Sparkles, desc: 'Fun and easy Ethereum wallet' },
+    { name: 'WalletConnect', icon: Link2, desc: 'Scan with mobile wallet' },
   ];
 
   return (
@@ -53,9 +54,9 @@ export default function WalletModal() {
             type="button"
             onClick={() => !isConnecting && setWalletModalOpen(false)}
             disabled={isConnecting}
-            className="flex h-8 w-8 items-center justify-center rounded-full bg-neutral-100 text-neutral-500 hover:bg-neutral-200 hover:text-black transition-colors disabled:opacity-50"
+            className="flex h-8 w-8 items-center justify-center rounded-full bg-neutral-100 text-neutral-500 hover:bg-neutral-200 hover:text-black transition-colors disabled:opacity-50 cursor-pointer"
           >
-            ✕
+            <X className="w-4 h-4" />
           </button>
         </div>
 
@@ -65,8 +66,12 @@ export default function WalletModal() {
             <div className="relative mb-6 flex h-20 w-20 items-center justify-center">
               <span className="absolute inset-0 rounded-full border-4 border-neutral-100" />
               <span className="absolute inset-0 rounded-full border-4 border-t-black border-r-transparent border-b-transparent border-l-transparent animate-spin" />
-              <span className="text-3xl">
-                {wallets.find((w) => w.name === connectingWallet)?.icon || '🔑'}
+              <span className="text-black">
+                {(() => {
+                  const w = wallets.find((w) => w.name === connectingWallet);
+                  const Icon = w ? w.icon : Key;
+                  return <Icon className="w-8 h-8" />;
+                })()}
               </span>
             </div>
             <h4 className="text-lg font-semibold">Connecting to {connectingWallet}...</h4>
@@ -77,25 +82,28 @@ export default function WalletModal() {
         ) : (
           /* Selection Screen */
           <div className="flex flex-col gap-3">
-            {wallets.map((wallet) => (
-              <button
-                key={wallet.name}
-                type="button"
-                onClick={() => connectWallet(wallet.name)}
-                className="flex w-full items-center gap-4 rounded-2xl border border-neutral-100 bg-neutral-50/50 p-4 text-left hover:bg-neutral-50 hover:border-neutral-300 transition-all duration-200 group active:scale-[0.99]"
-              >
-                <span className="text-3xl transition-transform duration-300 group-hover:scale-110">
-                  {wallet.icon}
-                </span>
-                <div className="flex-1">
-                  <h4 className="font-semibold text-black">{wallet.name}</h4>
-                  <p className="text-xs text-neutral-500 mt-0.5">{wallet.desc}</p>
-                </div>
-                <span className="text-neutral-400 group-hover:text-neutral-800 transition-colors">
-                  ➔
-                </span>
-              </button>
-            ))}
+            {wallets.map((wallet) => {
+              const WalletIcon = wallet.icon;
+              return (
+                <button
+                  key={wallet.name}
+                  type="button"
+                  onClick={() => connectWallet(wallet.name)}
+                  className="flex w-full items-center gap-4 rounded-2xl border border-neutral-100 bg-neutral-50/50 p-4 text-left hover:bg-neutral-50 hover:border-neutral-300 transition-all duration-200 group active:scale-[0.99] cursor-pointer"
+                >
+                  <span className="text-neutral-700 transition-transform duration-300 group-hover:scale-110">
+                    <WalletIcon className="w-8 h-8" />
+                  </span>
+                  <div className="flex-1">
+                    <h4 className="font-semibold text-black">{wallet.name}</h4>
+                    <p className="text-xs text-neutral-500 mt-0.5">{wallet.desc}</p>
+                  </div>
+                  <span className="text-neutral-400 group-hover:text-neutral-800 transition-colors">
+                    <ArrowRight className="w-4 h-4" />
+                  </span>
+                </button>
+              );
+            })}
 
             <div className="mt-4 text-center">
               <p className="text-xs text-neutral-400">

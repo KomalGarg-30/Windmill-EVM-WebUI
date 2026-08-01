@@ -23,6 +23,7 @@ export default function Navbar() {
 
   const navItems = [
     { name: 'Home', link: '/' },
+    { name: 'Trade', link: '/trade' },
     { name: 'Dashboard', link: '/dashboard' },
     { name: 'How It Works', link: '/how-it-works' },
     { name: 'Stats', link: '/stats' },

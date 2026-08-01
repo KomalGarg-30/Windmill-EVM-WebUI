@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import WalletModal from '@/components/wallet/WalletModal';
 import { useScrollRevealChildren } from '@/hooks/useScrollReveal';
+import { Monitor, Activity, Zap, CheckCircle2, Percent, Fuel, Search, RefreshCw } from 'lucide-react';
 
 const MOCK_MATCH_LOGS = [
   { status: 'SUCCESS', detail: 'Buy #298 matched Sell #120 — 0.12 ETH settled at $3,148.50', time: '2 mins ago', keeper: '0x7a3b...f291' },
@@ -16,14 +17,14 @@ const MOCK_MATCH_LOGS = [
 ];
 
 const KEEPER_STATS = [
-  { label: 'Active Nodes', value: '14', icon: '🖥️' },
-  { label: 'Network Uptime', value: '99.98%', icon: '⏱️', highlight: true },
-  { label: 'Sweep Latency', value: '0.03s', icon: '⚡' },
-  { label: 'Matches Settled', value: '1,402', icon: '✅' },
-  { label: 'Keeper Fee Rate', value: '0.1%', icon: '💰' },
-  { label: 'Avg Gas Cost', value: '~120k', icon: '⛽' },
-  { label: 'Pairs Monitored', value: '8', icon: '🔍' },
-  { label: 'Cycle Interval', value: '15s', icon: '🔄' },
+  { label: 'Active Nodes', value: '14', icon: Monitor },
+  { label: 'Network Uptime', value: '99.98%', icon: Activity, highlight: true },
+  { label: 'Sweep Latency', value: '0.03s', icon: Zap },
+  { label: 'Matches Settled', value: '1,402', icon: CheckCircle2 },
+  { label: 'Keeper Fee Rate', value: '0.1%', icon: Percent },
+  { label: 'Avg Gas Cost', value: '~120k', icon: Fuel },
+  { label: 'Pairs Monitored', value: '8', icon: Search },
+  { label: 'Cycle Interval', value: '15s', icon: RefreshCw },
 ];
 
 export default function KeepersPage() {
@@ -70,20 +71,25 @@ export default function KeepersPage() {
           <>
             {/* Stats Grid */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-              {KEEPER_STATS.map((stat, idx) => (
-                <div
-                  key={stat.label}
-                  data-reveal
-                  style={{ transitionDelay: `${idx * 60}ms` }}
-                  className="reveal-fade-up border border-neutral-100 bg-white rounded-2xl p-4 text-center hover:-translate-y-1 hover:shadow-md hover:border-neutral-200 transition-all duration-300"
-                >
-                  <span className="text-lg mb-1 block">{stat.icon}</span>
-                  <span className={`text-xl font-bold font-mono ${stat.highlight ? 'text-emerald-600' : 'text-black'}`}>
-                    {stat.value}
-                  </span>
-                  <p className="text-[10px] text-neutral-400 uppercase font-semibold mt-1">{stat.label}</p>
-                </div>
-              ))}
+              {KEEPER_STATS.map((stat, idx) => {
+                const StatIcon = stat.icon;
+                return (
+                  <div
+                    key={stat.label}
+                    data-reveal
+                    style={{ transitionDelay: `${idx * 60}ms` }}
+                    className="reveal-fade-up border border-neutral-100 bg-white rounded-2xl p-4 text-center hover:-translate-y-1 hover:shadow-md hover:border-neutral-200 transition-all duration-300 flex flex-col items-center justify-center"
+                  >
+                    <span className="text-neutral-600 mb-2 block">
+                      <StatIcon className="w-5 h-5" />
+                    </span>
+                    <span className={`text-xl font-bold font-mono ${stat.highlight ? 'text-emerald-600' : 'text-black'}`}>
+                      {stat.value}
+                    </span>
+                    <p className="text-[10px] text-neutral-400 uppercase font-semibold mt-1">{stat.label}</p>
+                  </div>
+                );
+              })}
             </div>
 
             {/* Match Logs */}

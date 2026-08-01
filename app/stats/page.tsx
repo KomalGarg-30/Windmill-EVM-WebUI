@@ -7,11 +7,22 @@ import { useWallet } from '@/context/WalletContext';
 import { useContract } from '@/hooks/useContract';
 import { SUPPORTED_CHAINS } from '@/lib/contractConfig';
 import { useScrollRevealChildren } from '@/hooks/useScrollReveal';
+import { 
+  BarChart2, 
+  Link2, 
+  Zap, 
+  Building2, 
+  Pause, 
+  CheckCircle2, 
+  Lock, 
+  Binary, 
+  Shield 
+} from 'lucide-react';
 
 interface StatCard {
   label: string;
   value: string;
-  icon: string;
+  icon: React.ComponentType<{ className?: string }>;
   bgClass: string;
   textClass: string;
   change?: string;
@@ -47,7 +58,7 @@ export default function StatsPage() {
       {
         label: 'Total Orders',
         value: totalOrders !== null ? totalOrders.toLocaleString() : '—',
-        icon: '📊',
+        icon: BarChart2,
         bgClass: 'bg-[#EFF6FF]',
         textClass: 'text-[#2563EB]',
         change: isReady ? 'Live from contract' : 'Connect wallet to view',
@@ -55,14 +66,14 @@ export default function StatsPage() {
       {
         label: 'Supported Chains',
         value: Object.keys(SUPPORTED_CHAINS).length.toString(),
-        icon: '🔗',
+        icon: Link2,
         bgClass: 'bg-[#F0FDF4]',
         textClass: 'text-[#16A34A]',
       },
       {
         label: 'Keeper Fee',
         value: '0.1%',
-        icon: '⚡',
+        icon: Zap,
         bgClass: 'bg-[#FFFBEB]',
         textClass: 'text-[#D97706]',
         change: 'Flat rate per match',
@@ -70,7 +81,7 @@ export default function StatsPage() {
       {
         label: 'Protocol Fee',
         value: protocolFee !== null ? `${protocolFee / 100}%` : '—',
-        icon: '🏛️',
+        icon: Building2,
         bgClass: 'bg-[#FAF5FF]',
         textClass: 'text-[#9333EA]',
         change: isReady ? 'Configurable by owner' : 'Connect to view',
@@ -78,14 +89,14 @@ export default function StatsPage() {
       {
         label: 'Exchange Status',
         value: isPaused ? 'Paused' : 'Active',
-        icon: isPaused ? '⏸️' : '✅',
+        icon: isPaused ? Pause : CheckCircle2,
         bgClass: isPaused ? 'bg-red-50' : 'bg-emerald-50',
         textClass: isPaused ? 'text-red-600' : 'text-emerald-700',
       },
       {
         label: 'Settlement',
         value: '100%',
-        icon: '🔒',
+        icon: Lock,
         bgClass: 'bg-[#F0F9FF]',
         textClass: 'text-[#0369A1]',
         change: 'Fully on-chain, atomic',
@@ -93,7 +104,7 @@ export default function StatsPage() {
       {
         label: 'Matching Algorithm',
         value: 'O(N log N)',
-        icon: '🧮',
+        icon: Binary,
         bgClass: 'bg-neutral-50',
         textClass: 'text-neutral-700',
         change: 'Two-pointer sweep',
@@ -101,7 +112,7 @@ export default function StatsPage() {
       {
         label: 'Max Protocol Fee',
         value: '5%',
-        icon: '🛡️',
+        icon: Shield,
         bgClass: 'bg-[#FFF7ED]',
         textClass: 'text-[#C2410C]',
         change: 'Hard-coded cap (500 bps)',
@@ -130,20 +141,22 @@ export default function StatsPage() {
 
         {/* Stats Grid */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          {stats.map((stat, idx) => (
-            <div
-              key={stat.label}
-              data-reveal
-              style={{ transitionDelay: `${idx * 80}ms` }}
-              className="reveal-fade-up flex flex-col gap-2 p-5 bg-white border border-neutral-100 rounded-2xl shadow-sm hover:-translate-y-1 hover:shadow-md hover:border-neutral-200 transition-all duration-300"
-            >
-              <div className="flex items-center gap-2">
-                <div
-                  className={`flex h-9 w-9 items-center justify-center rounded-xl ${stat.bgClass} text-base`}
-                >
-                  {stat.icon}
+          {stats.map((stat, idx) => {
+            const StatIcon = stat.icon;
+            return (
+              <div
+                key={stat.label}
+                data-reveal
+                style={{ transitionDelay: `${idx * 80}ms` }}
+                className="reveal-fade-up flex flex-col gap-2 p-5 bg-white border border-neutral-100 rounded-2xl shadow-sm hover:-translate-y-1 hover:shadow-md hover:border-neutral-200 transition-all duration-300"
+              >
+                <div className="flex items-center gap-2">
+                  <div
+                    className={`flex h-9 w-9 items-center justify-center rounded-xl ${stat.bgClass}`}
+                  >
+                    <StatIcon className={`w-5 h-5 ${stat.textClass}`} />
+                  </div>
                 </div>
-              </div>
               <span className="text-xl sm:text-2xl font-extrabold text-black font-sans tracking-tight mt-1">
                 {stat.value}
               </span>
@@ -154,7 +167,7 @@ export default function StatsPage() {
                 <span className="text-[9px] text-neutral-400 normal-case font-normal">{stat.change}</span>
               )}
             </div>
-          ))}
+          )})}
         </div>
 
         {/* Supported Networks Table */}
