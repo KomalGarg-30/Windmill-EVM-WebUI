@@ -4,7 +4,6 @@
 <!-- Organization Logo -->
 <div align="center" style="display: flex; align-items: center; justify-content: center; gap: 16px;">
   <img alt="Stability Nexus" src="public/stability.svg" width="175">
-  <img src="public/todo-project-logo.svg" width="175" />
 </div>
 
 &nbsp;
@@ -12,9 +11,7 @@
 <!-- Organization Name -->
 <div align="center">
 
-[![Static Badge](https://img.shields.io/badge/Stability_Nexus-/TODO-228B22?style=for-the-badge&labelColor=FFC517)](https://TODO.stability.nexus/)
-
-<!-- Correct deployed url to be added -->
+[![Static Badge](https://img.shields.io/badge/Stability_Nexus-Windmill_Exchange_WebUI-228B22?style=for-the-badge&labelColor=FFC517)](https://stability.nexus/)
 
 </div>
 
@@ -48,69 +45,42 @@
 ---
 
 <div align="center">
-<h1>TODO: Project Name</h1>
+<h1>Windmill Exchange Web UI</h1>
 </div>
 
-[TODO](https://TODO.stability.nexus/) is a ... TODO: Project Description.
+Windmill Exchange Web UI is the Next.js based frontend interface for interacting with the Windmill Exchange smart contracts.
 
 ---
 
-## Project Maturity
+## 🚀 Features
 
-TODO: In the checklist below, mark the items that have been completed and delete items that are not applicable to the current project:
+- **Wallet Integration**: Connect seamlessly via MetaMask and EIP-1193 compatible wallets.
+- **Dynamic Order Dashboard**: Track and manage your orders and view their dynamically adjusting prices over time.
+- **Keeper Monitor**: View the status of the decentralized keeper network and match logs.
+- **Multi-Chain Native**: Supports deploying orders across various EVM chains effortlessly.
 
-* [ ] The project has a logo.
-* [ ] The project has a favicon.
-* [ ] The protocol:
-   - [ ] has been described and formally specified in a paper.
-   - [ ] has had its main properties mathematically proven.
-   - [ ] has been formally verified.
-* [ ] The smart contracts:
-   - [ ] were thoroughly reviewed by at least two knights of The Stable Order.
-   - [ ] were deployed to:
-      - [ ] Ergo
-      - [ ] Cardano
-      - [ ] EVM Chains:
-        - [ ] Ethereum Classic
-        - [ ] Ethereum
-        - [ ] Polygon
-        - [ ] BSC
-        - [ ] Base
-* [ ] The mobile app:
-   - [ ] has an _About_ page containing the Stability Nexus's logo and pointing to the social media accounts of the Stability Nexus.
-   - [ ] is available for download as a release in this repo.
-   - [ ] is available in the relevant app stores.
-* [ ] The web frontend:
-   - [ ] has proper title and metadata.
-   - [ ] has proper open graph metadata, to ensure that it is shown well when shared in social media (Discord, Telegram, Twitter, LinkedIn).
-   - [ ] has a footer, containing the Stability Nexus's logo and pointing to the social media accounts of the Stability Nexus.
-   - [ ] is fully static and client-side.
-   - [ ] is deployed to Github Pages via a Github Workflow.
-   - [ ] is accessible through the https://TODO:PROJECT-NAME.stability.nexus domain.
-* [ ] the project is listed in [https://stability.nexus/protocols](https://stability.nexus/protocols).
+---
+
+## Architecture
+
+```text
+Windmill-EVM-WebUI/
+├── app/                  # Next.js 14+ App Router
+├── components/           # Reusable UI components
+├── context/              # React Context (WalletContext)
+├── hooks/                # Custom React hooks (useContract)
+└── lib/                  # Utilities and ABIs
+```
 
 ---
 
 ## Tech Stack
 
-TODO:
-
-### Frontend
-
-TODO:
-
-- Next.js 14+ (React)
-- TypeScript
-- TailwindCSS
-- shadcn/ui
-
-### Blockchain
-
-TODO:
-
-- Wagmi
-- Solidity Smart Contracts
-- Ethers.js
+| Layer | Technology |
+|---|---|
+| Framework | Next.js 14+ (App Router) |
+| UI | React, Tailwind CSS |
+| Web3 Integration | Built-in window.ethereum (Ethers-free ABI encoding) |
 
 ---
 
@@ -118,71 +88,79 @@ TODO:
 
 ### Prerequisites
 
-TODO
-
-- Node.js 18+
-- npm/yarn/pnpm
-- MetaMask or any other web3 wallet browser extension
+| Tool | Version | Install |
+|---|---|---|
+| `node` | 20+ | [nodejs.org](https://nodejs.org/) |
+| `npm` | 10+ | (comes with node) |
 
 ### Installation
 
-TODO
-
-#### 1. Clone the Repository
-
 ```bash
-git clone https://github.com/StabilityNexus/TODO.git
-cd TODO
-```
-
-#### 2. Install Dependencies
-
-Using your preferred package manager:
-
-```bash
+git clone https://github.com/StabilityNexus/Windmill-EVM-Contracts.git
+cd Windmill-EVM-Contracts/Windmill-EVM-WebUI
 npm install
-# or
-yarn install
-# or
-pnpm install
 ```
 
-#### 3. Run the Development Server
-
-Start the app locally:
+### Environment Setup
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
+cp .env.local.example .env.local
 ```
 
-#### 4. Open your Browser
+Edit `.env.local` to specify environment values:
 
-Navigate to [http://localhost:3000](http://localhost:3000) to see the application.
+```env
+NEXT_PUBLIC_DEFAULT_CHAIN_ID=11155111
+```
 
 ---
 
-## Contributing
+## Usage
 
-We welcome contributions of all kinds! To contribute:
+### Run Locally (Development)
 
-1. Fork the repository and create your feature branch (`git checkout -b feature/AmazingFeature`).
-2. Commit your changes (`git commit -m 'Add some AmazingFeature'`).
-3. Run the development workflow commands to ensure code quality:
-   - `npm run format:write`
-   - `npm run lint:fix`
-   - `npm run typecheck`
-4. Push your branch (`git push origin feature/AmazingFeature`).
-5. Open a Pull Request for review.
+```bash
+npm run dev
+```
+Access the application at [http://localhost:3000](http://localhost:3000).
 
-If you encounter bugs, need help, or have feature requests:
+### Build for Production
 
-- Please open an issue in this repository providing detailed information.
-- Describe the problem clearly and include any relevant logs or screenshots.
+```bash
+npm run build
+npm start
+```
 
-We appreciate your feedback and contributions!
+### Run with Docker
 
-© 2025 The Stable Order.
+```bash
+# Build the image
+docker build -t windmill-evm-webui .
+
+# Run the container
+docker run -p 3000:3000 windmill-evm-webui
+```
+
+---
+
+## 🙌 Contributing
+
+⭐ Don't forget to star this repository if you find it useful! ⭐
+
+Thank you for considering contributing to this project! Contributions are highly appreciated and welcomed. To ensure smooth collaboration, please refer to our [Contribution Guidelines](./CONTRIBUTING.md).
+
+---
+
+## 📍 License
+
+See the [LICENSE](LICENSE) file for details.
+
+---
+
+## 💪 Thanks To All Contributors
+
+Thanks a lot for spending your time helping Windmill Exchange grow. Keep rocking!
+
+[![Contributors](https://contrib.rocks/image?repo=StabilityNexus/Windmill-EVM-Contracts)](https://github.com/StabilityNexus/Windmill-EVM-Contracts/graphs/contributors)
+
+© 2026 Stability Nexus
