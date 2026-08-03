@@ -3,6 +3,11 @@
 import React, { useEffect, useId, useRef, useCallback } from 'react';
 import { useWallet } from '@/context/WalletContext';
 
+// ─── Externalized Labels (ready for i18n adoption) ──────────────
+const LABELS = {
+  close: 'Close',
+} as const;
+
 export default function WalletModal() {
   const {
     walletModalOpen,
@@ -52,6 +57,13 @@ export default function WalletModal() {
       const first = focusable[0];
       const last = focusable[focusable.length - 1];
 
+      // Guard: when focus is on the modal container itself (initial state)
+      if (document.activeElement === modalRef.current) {
+        e.preventDefault();
+        (e.shiftKey ? last : first).focus();
+        return;
+      }
+
       if (e.shiftKey && document.activeElement === first) {
         e.preventDefault();
         last.focus();
@@ -96,7 +108,7 @@ export default function WalletModal() {
           <h3 id={titleId} className="text-xl font-bold tracking-tight">Connect a Wallet</h3>
           <button
             type="button"
-            aria-label="Close"
+            aria-label={LABELS.close}
             onClick={() => !isConnecting && setWalletModalOpen(false)}
             disabled={isConnecting}
             className="flex h-8 w-8 items-center justify-center rounded-full bg-neutral-100 text-neutral-500 hover:bg-neutral-200 hover:text-black transition-colors disabled:opacity-50"
