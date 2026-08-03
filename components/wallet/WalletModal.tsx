@@ -40,7 +40,7 @@ export default function WalletModal() {
       if (e.key !== 'Tab') return;
 
       const focusable = modalRef.current?.querySelectorAll<HTMLElement>(
-        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
+        'button:not([disabled]), [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
       );
 
       if (!focusable || focusable.length === 0) {
@@ -84,6 +84,7 @@ export default function WalletModal() {
     >
       {/* Backdrop */}
       <div
+        aria-hidden="true"
         className="absolute inset-0 bg-black/40 backdrop-blur-sm"
         onClick={() => !isConnecting && setWalletModalOpen(false)}
       />
@@ -95,11 +96,12 @@ export default function WalletModal() {
           <h3 id={titleId} className="text-xl font-bold tracking-tight">Connect a Wallet</h3>
           <button
             type="button"
+            aria-label="Close"
             onClick={() => !isConnecting && setWalletModalOpen(false)}
             disabled={isConnecting}
             className="flex h-8 w-8 items-center justify-center rounded-full bg-neutral-100 text-neutral-500 hover:bg-neutral-200 hover:text-black transition-colors disabled:opacity-50"
           >
-            ✕
+            <span aria-hidden="true">✕</span>
           </button>
         </div>
 
