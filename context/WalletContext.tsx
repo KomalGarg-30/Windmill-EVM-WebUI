@@ -136,22 +136,12 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
 
   // ── Connect Wallet ────────────────────────────────────────────────
   const connectWallet = useCallback(async (walletName: string) => {
-    const eth = window.ethereum;
+    const eth = typeof window !== 'undefined' ? window.ethereum : undefined;
 
-    // If no injected wallet, simulate for demo purposes
     if (!eth) {
-      setIsConnecting(true);
-      setConnectingWallet(walletName);
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-      const randomHex = Array.from({ length: 40 }, () =>
-        Math.floor(Math.random() * 16).toString(16)
-      ).join('');
-      setFullAddress(`0x${randomHex}`);
-      setIsConnected(true);
-      setChainId(DEFAULT_CHAIN_ID);
+      alert(`No Web3 provider found. Please install a Web3 wallet extension (such as MetaMask, Rabby, or Coinbase Wallet) to connect.`);
       setIsConnecting(false);
       setConnectingWallet(null);
-      setWalletModalOpen(false);
       return;
     }
 

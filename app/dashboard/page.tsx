@@ -49,10 +49,7 @@ export default function DashboardPage() {
   const [orders, setOrders] = useState<Order[]>([]);
   const activeOrders = useMemo(() => orders.filter((o) => o.active), [orders]);
 
-  const [settledHistory, setSettledHistory] = useState([
-    { id: 182, pair: 'WETH/USDC', amount: '0.80', price: '$3,150.00', age: '15 mins ago', txHash: '' },
-    { id: 175, pair: 'WBTC/USDC', amount: '0.04', price: '$94,500.00', age: '1 hour ago', txHash: '' },
-  ]);
+  const [settledHistory, setSettledHistory] = useState<Array<{ id: number; pair: string; amount: string; price: string; age: string; txHash: string }>>([]);
 
   // ── Stats ─────────────────────────────────────────────────────────
   const [totalOrders, setTotalOrders] = useState<number | null>(null);
@@ -65,66 +62,37 @@ export default function DashboardPage() {
   }, [chainId]);
 
   // ── Fetch on-chain data ───────────────────────────────────────────
+  const { fetchEvents } = useContract();
+
   useEffect(() => {
     if (!isReady) return;
 
     const fetchData = async () => {
-      const [totalResult, pausedResult] = await Promise.all([
+      const [totalResult, pausedResult, matchedLogs] = await Promise.all([
         readContract('totalOrders'),
         readContract('paused'),
+        fetchEvents('OrderMatched'),
       ]);
       if (totalResult.data !== null) setTotalOrders(Number(totalResult.data));
       if (pausedResult.data !== null) setIsPaused(Boolean(pausedResult.data));
+      if (matchedLogs.data && Array.isArray(matchedLogs.data)) {
+        const parsed = matchedLogs.data.map((log: any) => ({
+          id: Number(log.args?.buyOrderId || 0),
+          pair: 'On-Chain Match',
+          amount: (Number(log.args?.executedQuantity || 0) / 1e18).toFixed(2),
+          price: `$${(Number(log.args?.settlementPrice || 0) / 1e18).toFixed(2)}`,
+          age: 'Settled',
+          txHash: log.transactionHash || '',
+        }));
+        setSettledHistory(parsed.reverse());
+      }
     };
 
     fetchData();
-  }, [isReady, readContract]);
+  }, [isReady, readContract, fetchEvents]);
 
-  // ── Dynamic price calculation loop ────────────────────────────────
+  // ── Dynamic price calculation loop for deployed orders ────────────
   useEffect(() => {
-    const initTimeout = setTimeout(() => {
-      setOrders([
-        {
-          id: 2884,
-          type: 'Buy',
-          tokenIn: 'WETH',
-          tokenOut: 'USDC',
-          tokenInSymbol: 'WETH',
-          tokenOutSymbol: 'USDC',
-          amount: 1.5,
-          startPrice: 3200,
-          currentPrice: 3200,
-          slope: -0.15,
-          minPrice: 2800,
-          maxPrice: 0,
-          expiry: 0,
-          createdAt: Date.now() - 30000,
-          active: true,
-          maker: fullAddress || '0x0000',
-          onChain: false,
-        },
-        {
-          id: 1940,
-          type: 'Sell',
-          tokenIn: 'USDC',
-          tokenOut: 'WETH',
-          tokenInSymbol: 'USDC',
-          tokenOutSymbol: 'WETH',
-          amount: 4500,
-          startPrice: 3000,
-          currentPrice: 3000,
-          slope: 0.1,
-          minPrice: 0,
-          maxPrice: 3500,
-          expiry: 0,
-          createdAt: Date.now() - 60000,
-          active: true,
-          maker: fullAddress || '0x0000',
-          onChain: false,
-        },
-      ]);
-    }, 0);
-
     const timer = setInterval(() => {
       setOrders((prevOrders) =>
         prevOrders.map((ord) => {
@@ -141,10 +109,9 @@ export default function DashboardPage() {
     }, 1000);
 
     return () => {
-      clearTimeout(initTimeout);
       clearInterval(timer);
     };
-  }, [fullAddress]);
+  }, []);
 
   // ── Create Order Handler ──────────────────────────────────────────
   const handleCreateOrder = async (e: React.FormEvent) => {
@@ -243,38 +210,15 @@ export default function DashboardPage() {
           return;
         } catch (err) {
           console.error('On-chain order creation failed:', err);
-          setTxStatus('On-chain submission failed. Creating demo order...');
+          setTxStatus(`On-chain transaction failed: ${(err as Error).message}`);
+          setIsSubmitting(false);
+          return;
         }
       }
     }
 
-    // Fallback: local demo order
-    setTimeout(() => {
-      const newOrder: Order = {
-        id: nextIdRef.current++,
-        type: orderType,
-        tokenIn,
-        tokenOut,
-        tokenInSymbol: tokenIn,
-        tokenOutSymbol: tokenOut,
-        amount,
-        startPrice,
-        currentPrice: startPrice,
-        slope,
-        minPrice,
-        maxPrice,
-        expiry: expiry ? Math.floor(new Date(expiry).getTime() / 1000) : 0,
-        createdAt: Date.now(),
-        active: true,
-        maker: fullAddress || 'demo',
-        onChain: false,
-      };
-      setOrders((prev) => [newOrder, ...prev]);
-      setIsSubmitting(false);
-      setTxStatus('Demo order created (no contract deployed on this chain)');
-      setTimeout(() => setTxStatus(null), 4000);
-      setAmount(1);
-    }, 1200);
+    setTxStatus('Smart contract address or provider not connected on this chain. Please connect wallet to active EVM network.');
+    setIsSubmitting(false);
   };
 
   // ── Cancel Order Handler ──────────────────────────────────────────
@@ -709,24 +653,28 @@ export default function DashboardPage() {
             <div className="border border-neutral-100 rounded-3xl p-6 bg-white shadow-sm w-full">
               <h2 className="text-lg font-bold text-black mb-4">Settled Matches Log</h2>
               <div className="flex flex-col gap-3 font-mono text-[11px] text-neutral-500">
-                {settledHistory.map((item, idx) => (
-                  <div
-                    key={`${item.id}-${idx}`}
-                    className="flex justify-between items-center border-b border-neutral-100 pb-2.5 last:border-none last:pb-0"
-                  >
-                    <div className="flex items-center gap-2">
-                      <span className="font-sans text-[9px] px-1.5 py-0.5 rounded bg-neutral-100 text-neutral-800 uppercase font-semibold">
-                        Matched
-                      </span>
-                      <span className="text-black font-bold font-sans">{item.pair}</span>
-                      <span>Qty: {item.amount}</span>
+                {settledHistory.length === 0 ? (
+                  <p className="text-neutral-400 text-xs py-4 text-center font-sans">No settled matches recorded on-chain yet.</p>
+                ) : (
+                  settledHistory.map((item, idx) => (
+                    <div
+                      key={`${item.id}-${idx}`}
+                      className="flex justify-between items-center border-b border-neutral-100 pb-2.5 last:border-none last:pb-0"
+                    >
+                      <div className="flex items-center gap-2">
+                        <span className="font-sans text-[9px] px-1.5 py-0.5 rounded bg-neutral-100 text-neutral-800 uppercase font-semibold">
+                          Matched
+                        </span>
+                        <span className="text-black font-bold font-sans">{item.pair}</span>
+                        <span>Qty: {item.amount}</span>
+                      </div>
+                      <div className="flex items-center gap-4">
+                        <span className="text-black font-bold">{item.price}</span>
+                        <span className="text-neutral-400 text-[10px]">{item.age}</span>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-4">
-                      <span className="text-black font-bold">{item.price}</span>
-                      <span className="text-neutral-400 text-[10px]">{item.age}</span>
-                    </div>
-                  </div>
-                ))}
+                  ))
+                )}
               </div>
             </div>
           </div>

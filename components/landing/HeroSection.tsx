@@ -77,13 +77,13 @@ export default function HeroSection() {
               <div className="w-4" />
             </div>
 
-            {/* Mock Pricing Curves */}
+            {/* Live Pricing Curves Diagram */}
             <div className="flex-1 p-6 flex flex-col sm:flex-row gap-6 items-center justify-center bg-white">
               {/* Buy Curve */}
               <div className="flex-1 w-full flex flex-col gap-3 p-4 bg-neutral-50/50 rounded-xl border border-black/5 shadow-sm">
                 <div className="flex justify-between items-center">
-                  <span className="text-[10px] font-bold text-neutral-800">BUY ORDER #2884</span>
-                  <span className="text-[9px] px-2 py-0.5 rounded-full bg-neutral-100 text-neutral-800 font-semibold">Active</span>
+                  <span className="text-[10px] font-bold text-neutral-800">BUY ORDER CURVE</span>
+                  <span className="text-[9px] px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 font-semibold">s &lt; 0</span>
                 </div>
                 <div className="h-20 flex items-end justify-between gap-1 pt-6 border-b border-dashed border-black/5 relative">
                   <div className="absolute inset-0 flex flex-col justify-between pointer-events-none opacity-5">
@@ -96,8 +96,8 @@ export default function HeroSection() {
                   <div className="w-full h-6 bg-black rounded-t-sm opacity-30" />
                 </div>
                 <div className="flex justify-between text-[9px] text-neutral-400 font-mono mt-1">
-                  <span>Start: $1.20</span>
-                  <span>Slope: -0.01</span>
+                  <span>P(t) = P₀ + s·t</span>
+                  <span>Decreasing Bid</span>
                 </div>
               </div>
 
@@ -106,14 +106,14 @@ export default function HeroSection() {
                 <div className="h-8 w-8 rounded-full bg-black text-white flex items-center justify-center shadow-lg font-mono font-bold text-xs">
                   <Zap className="w-3.5 h-3.5 fill-current text-white" />
                 </div>
-                <span className="text-[9px] font-bold tracking-widest text-neutral-800 uppercase mt-1">MATCH</span>
+                <span className="text-[9px] font-bold tracking-widest text-neutral-800 uppercase mt-1">SWEEP</span>
               </div>
 
               {/* Sell Curve */}
               <div className="flex-1 w-full flex flex-col gap-3 p-4 bg-neutral-50/50 rounded-xl border border-black/5 shadow-sm">
                 <div className="flex justify-between items-center">
-                  <span className="text-[10px] font-bold text-neutral-800">SELL ORDER #1940</span>
-                  <span className="text-[9px] px-2 py-0.5 rounded-full bg-neutral-100 text-neutral-800 font-semibold">Active</span>
+                  <span className="text-[10px] font-bold text-neutral-800">SELL ORDER CURVE</span>
+                  <span className="text-[9px] px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 font-semibold">s &gt; 0</span>
                 </div>
                 <div className="h-20 flex items-end justify-between gap-1 pt-6 border-b border-dashed border-black/5 relative">
                   <div className="absolute inset-0 flex flex-col justify-between pointer-events-none opacity-5">
@@ -126,8 +126,8 @@ export default function HeroSection() {
                   <div className="w-full h-16 bg-neutral-700 rounded-t-sm opacity-90" />
                 </div>
                 <div className="flex justify-between text-[9px] text-neutral-400 font-mono mt-1">
-                  <span>Start: $0.85</span>
-                  <span>Slope: +0.015</span>
+                  <span>P(t) = P₀ + s·t</span>
+                  <span>Increasing Ask</span>
                 </div>
               </div>
             </div>

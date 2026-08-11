@@ -1,35 +1,327 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import Link from 'next/link';
 import WalletModal from '@/components/wallet/WalletModal';
 import { useScrollRevealChildren } from '@/hooks/useScrollReveal';
-import { Monitor, Activity, Zap, CheckCircle2, Percent, Fuel, Search, RefreshCw } from 'lucide-react';
+import { useContract } from '@/hooks/useContract';
+import { Monitor, Activity, Zap, CheckCircle2, Percent, Fuel, Search, RefreshCw, Play, Square, Terminal, Loader2 } from 'lucide-react';
 
-const MOCK_MATCH_LOGS = [
-  { status: 'SUCCESS', detail: 'Buy #298 matched Sell #120 — 0.12 ETH settled at $3,148.50', time: '2 mins ago', keeper: '0x7a3b...f291' },
-  { status: 'SUCCESS', detail: 'Buy #295 matched Sell #118 — 54.00 USDC settled at $1.0002', time: '5 mins ago', keeper: '0x1c8e...a402' },
-  { status: 'SWEEP', detail: 'Two-pointer sweep cycle complete. 3 pairs scanned, 2 matched.', time: '7 mins ago', keeper: '0x7a3b...f291' },
-  { status: 'SUCCESS', detail: 'Buy #284 matched Sell #102 — 1,250 DAI settled at $0.9998', time: '12 mins ago', keeper: '0x1c8e...a402' },
-  { status: 'SUCCESS', detail: 'Buy #280 matched Sell #99 — 0.05 WBTC settled at $94,220.00', time: '18 mins ago', keeper: '0x7a3b...f291' },
-  { status: 'SKIP', detail: 'No matchable pairs found in this sweep cycle.', time: '22 mins ago', keeper: '0x1c8e...a402' },
-  { status: 'SUCCESS', detail: 'Buy #275 matched Sell #95 — 2.3 ETH settled at $3,155.20', time: '30 mins ago', keeper: '0x7a3b...f291' },
-];
+// ── Keeper Bot Panel (local process control) ────────────────────────────
+function KeeperBotPanel() {
+  const [running, setRunning] = useState(false);
+  const [pid, setPid] = useState<number | null>(null);
+  const [startedAt, setStartedAt] = useState<string | null>(null);
+  const [logs, setLogs] = useState<string[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [polling, setPolling] = useState(false);
+  const logEndRef = useRef<HTMLDivElement>(null);
 
-const KEEPER_STATS = [
-  { label: 'Active Nodes', value: '14', icon: Monitor },
-  { label: 'Network Uptime', value: '99.98%', icon: Activity, highlight: true },
-  { label: 'Sweep Latency', value: '0.03s', icon: Zap },
-  { label: 'Matches Settled', value: '1,402', icon: CheckCircle2 },
-  { label: 'Keeper Fee Rate', value: '0.1%', icon: Percent },
-  { label: 'Avg Gas Cost', value: '~120k', icon: Fuel },
-  { label: 'Pairs Monitored', value: '8', icon: Search },
-  { label: 'Cycle Interval', value: '15s', icon: RefreshCw },
-];
+  // Scroll to bottom whenever new logs arrive
+  useEffect(() => {
+    logEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [logs]);
+
+  // Poll status + logs
+  const fetchStatus = useCallback(async () => {
+    try {
+      const res = await fetch('/api/keeper');
+      if (!res.ok) return;
+      const data = await res.json();
+      setRunning(data.running);
+      setPid(data.pid);
+      setStartedAt(data.startedAt);
+      setLogs(data.logs ?? []);
+    } catch {
+      // network blip — ignore
+    }
+  }, []);
+
+  // Initial fetch on mount
+  useEffect(() => {
+    fetchStatus();
+  }, [fetchStatus]);
+
+  // Poll every 2s while running
+  useEffect(() => {
+    if (!polling) return;
+    const interval = setInterval(fetchStatus, 2000);
+    return () => clearInterval(interval);
+  }, [polling, fetchStatus]);
+
+  // Start polling when running
+  useEffect(() => {
+    setPolling(running);
+  }, [running]);
+
+  const handleStart = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await fetch('/api/keeper', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'start' }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.ok) {
+        setError(data.error ?? 'Failed to start keeper.');
+        return;
+      }
+      setRunning(true);
+      setPid(data.pid);
+      setStartedAt(data.startedAt);
+      setPolling(true);
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Network error');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleStop = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await fetch('/api/keeper', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'stop' }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.ok) {
+        setError(data.error ?? 'Failed to stop keeper.');
+        return;
+      }
+      setRunning(false);
+      setPid(null);
+      setPolling(false);
+      // One final fetch to get the exit log
+      setTimeout(fetchStatus, 500);
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Network error');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Calculate uptime
+  const uptime = startedAt && running
+    ? (() => {
+        const diff = Math.floor((Date.now() - new Date(startedAt).getTime()) / 1000);
+        const h = Math.floor(diff / 3600);
+        const m = Math.floor((diff % 3600) / 60);
+        const s = diff % 60;
+        return `${h > 0 ? `${h}h ` : ''}${m}m ${s}s`;
+      })()
+    : null;
+
+  return (
+    <div className="border border-neutral-100 rounded-2xl p-6 bg-white shadow-sm">
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-3">
+          <Terminal className="w-5 h-5 text-neutral-700" />
+          <h3 className="text-lg font-bold text-black">Keeper Bot Control</h3>
+        </div>
+
+        {/* Status badge */}
+        <div className="flex items-center gap-2">
+          {running ? (
+            <span className="flex items-center gap-1.5 text-[10px] font-bold text-emerald-600 uppercase tracking-wider bg-emerald-50 px-3 py-1.5 rounded-full">
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+              Running
+              {pid && <span className="text-emerald-500 font-mono ml-1">PID {pid}</span>}
+            </span>
+          ) : (
+            <span className="flex items-center gap-1.5 text-[10px] font-bold text-neutral-400 uppercase tracking-wider bg-neutral-50 px-3 py-1.5 rounded-full">
+              <span className="h-1.5 w-1.5 rounded-full bg-neutral-300" />
+              Stopped
+            </span>
+          )}
+        </div>
+      </div>
+
+      {/* Uptime bar */}
+      {running && uptime && (
+        <div className="mb-4 text-[10px] text-neutral-400 font-mono flex items-center gap-2">
+          <Activity className="w-3 h-3" />
+          Uptime: {uptime}
+          <span className="text-neutral-300">·</span>
+          Started {new Date(startedAt!).toLocaleTimeString()}
+        </div>
+      )}
+
+      {/* Error message */}
+      {error && (
+        <div className="mb-4 text-xs text-red-600 bg-red-50 border border-red-100 rounded-xl px-4 py-2.5 font-mono">
+          {error}
+        </div>
+      )}
+
+      {/* Start / Stop button */}
+      <div className="flex gap-3 mb-5">
+        {!running ? (
+          <button
+            onClick={handleStart}
+            disabled={loading}
+            className="flex items-center gap-2 px-6 py-3 rounded-xl bg-black text-white text-sm font-bold hover:bg-neutral-800 active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+          >
+            {loading ? (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            ) : (
+              <Play className="w-4 h-4" />
+            )}
+            Start Keeper Bot
+          </button>
+        ) : (
+          <button
+            onClick={handleStop}
+            disabled={loading}
+            className="flex items-center gap-2 px-6 py-3 rounded-xl bg-red-600 text-white text-sm font-bold hover:bg-red-700 active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+          >
+            {loading ? (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            ) : (
+              <Square className="w-4 h-4" />
+            )}
+            Stop Keeper Bot
+          </button>
+        )}
+
+        <button
+          onClick={fetchStatus}
+          className="flex items-center gap-1.5 px-4 py-3 rounded-xl border border-neutral-200 text-neutral-600 text-sm font-medium hover:border-neutral-300 hover:text-black transition-all cursor-pointer"
+        >
+          <RefreshCw className="w-3.5 h-3.5" />
+          Refresh
+        </button>
+      </div>
+
+      {/* Live log viewer */}
+      <div className="bg-neutral-950 rounded-xl p-4 max-h-72 overflow-y-auto font-mono text-[11px] text-neutral-300 leading-relaxed">
+        {logs.length === 0 ? (
+          <div className="text-neutral-600 italic py-6 text-center text-xs">
+            No logs yet. Click &ldquo;Start Keeper Bot&rdquo; to begin.
+          </div>
+        ) : (
+          logs.map((line, i) => (
+            <div
+              key={i}
+              className={`py-0.5 ${
+                line.includes('[stderr]') || line.includes('error')
+                  ? 'text-red-400'
+                  : line.includes('[api]')
+                  ? 'text-blue-400'
+                  : line.includes('warn')
+                  ? 'text-amber-400'
+                  : 'text-neutral-300'
+              }`}
+            >
+              {line}
+            </div>
+          ))
+        )}
+        <div ref={logEndRef} />
+      </div>
+    </div>
+  );
+}
 
 export default function KeepersPage() {
   const containerRef = useScrollRevealChildren<HTMLDivElement>({ threshold: 0.1 });
   const [activeSection, setActiveSection] = useState<'monitor' | 'guide'>('monitor');
+
+  // ── Live Keeper State & Contract Events ──────────────────────────────
+  const [keeperRunning, setKeeperRunning] = useState(false);
+  const [keeperLogs, setKeeperLogs] = useState<string[]>([]);
+  const [totalOrders, setTotalOrders] = useState<number | null>(null);
+  const [matchCount, setMatchCount] = useState<number>(0);
+  const [matchedEvents, setMatchedEvents] = useState<Array<{ status: string; detail: string; time: string; keeper: string }>>([]);
+
+  const { readContract, isReady, fetchEvents } = useContract();
+
+  // Poll keeper status from API
+  useEffect(() => {
+    const checkKeeperStatus = async () => {
+      try {
+        const res = await fetch('/api/keeper');
+        if (res.ok) {
+          const data = await res.json();
+          setKeeperRunning(Boolean(data.running));
+          if (data.logs) {
+            setKeeperLogs(data.logs);
+          }
+        }
+      } catch {
+        // ignore network error
+      }
+    };
+    checkKeeperStatus();
+    const timer = setInterval(checkKeeperStatus, 3000);
+    return () => clearInterval(timer);
+  }, []);
+
+  // Fetch on-chain orders & match events
+  useEffect(() => {
+    if (!isReady) return;
+    const fetchOnChainData = async () => {
+      const { data: total } = await readContract('totalOrders');
+      if (total !== null) {
+        setTotalOrders(Number(total));
+      }
+
+      // Fetch OrderMatched events
+      const { data: events } = await fetchEvents('OrderMatched');
+      if (events && Array.isArray(events)) {
+        setMatchCount(events.length);
+        const parsed = events.slice(-10).map((ev: any) => {
+          const buyId = ev.args?.buyOrderId?.toString() || '?';
+          const sellId = ev.args?.sellOrderId?.toString() || '?';
+          const keeperAddr = ev.args?.keeper ? `${ev.args.keeper.slice(0, 6)}...${ev.args.keeper.slice(-4)}` : 'Node';
+          return {
+            status: 'SUCCESS',
+            detail: `Buy #${buyId} matched Sell #${sellId} on-chain`,
+            time: 'On-Chain Event',
+            keeper: keeperAddr,
+          };
+        });
+        setMatchedEvents(parsed.reverse());
+      }
+    };
+    fetchOnChainData();
+  }, [isReady, readContract, fetchEvents]);
+
+  // Combine keeper process stdout logs and on-chain match events
+  const dynamicLogs = useMemo(() => {
+    const combined = [...matchedEvents];
+
+    // Extract match logs from keeper process stdout if available
+    keeperLogs.forEach((line) => {
+      if (line.includes('Executing match') || line.includes('Matched') || line.includes('Sweep')) {
+        combined.push({
+          status: line.includes('error') ? 'SKIP' : line.includes('Sweep') ? 'SWEEP' : 'SUCCESS',
+          detail: line.replace('[stdout]', '').replace('[stderr]', '').trim(),
+          time: 'Live Log',
+          keeper: 'Local Keeper',
+        });
+      }
+    });
+
+    return combined;
+  }, [matchedEvents, keeperLogs]);
+
+  // Dynamic Statistics
+  const dynamicKeeperStats = [
+    { label: 'Keeper Process', value: keeperRunning ? 'Running' : 'Stopped', icon: Monitor, highlight: keeperRunning },
+    { label: 'Network Node', value: isReady ? 'Connected' : 'Ready', icon: Activity },
+    { label: 'Sweep Latency', value: '15s Loop', icon: Zap },
+    { label: 'Contract Orders', value: totalOrders !== null ? totalOrders.toString() : '0', icon: CheckCircle2 },
+    { label: 'Keeper Fee Rate', value: '0.1%', icon: Percent },
+    { label: 'Avg Gas Cost', value: '~120k', icon: Fuel },
+    { label: 'Matches Settled', value: matchCount.toString(), icon: Search },
+    { label: 'Cycle Interval', value: '15s', icon: RefreshCw },
+  ];
 
   return (
     <main className="w-full min-h-screen bg-white text-black pt-24">
@@ -71,7 +363,7 @@ export default function KeepersPage() {
           <>
             {/* Stats Grid */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-              {KEEPER_STATS.map((stat, idx) => {
+              {dynamicKeeperStats.map((stat, idx) => {
                 const StatIcon = stat.icon;
                 return (
                   <div
@@ -97,33 +389,41 @@ export default function KeepersPage() {
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-bold text-black">Recent Match Logs</h3>
                 <div className="flex items-center gap-1.5 text-[9px] font-bold text-emerald-600 uppercase tracking-wider">
-                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                  Live Feed
+                  <span className={`h-1.5 w-1.5 rounded-full ${keeperRunning ? 'bg-emerald-500 animate-pulse' : 'bg-neutral-300'}`} />
+                  {keeperRunning ? 'Keeper Live' : 'Feed Standing By'}
                 </div>
               </div>
               <div className="font-mono text-xs flex flex-col gap-3 max-h-96 overflow-y-auto">
-                {MOCK_MATCH_LOGS.map((log, idx) => (
-                  <div key={idx} className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-neutral-50 pb-3 last:border-none last:pb-0">
-                    <div className="flex items-start gap-2">
-                      <span
-                        className={`text-[10px] font-bold shrink-0 px-1.5 py-0.5 rounded ${
-                          log.status === 'SUCCESS'
-                            ? 'bg-emerald-50 text-emerald-700'
-                            : log.status === 'SWEEP'
-                            ? 'bg-blue-50 text-blue-700'
-                            : 'bg-neutral-100 text-neutral-500'
-                        }`}
-                      >
-                        {log.status}
-                      </span>
-                      <span className="text-neutral-600 font-sans text-[11px]">{log.detail}</span>
-                    </div>
-                    <div className="flex items-center gap-3 shrink-0">
-                      <span className="text-[9px] text-neutral-400 font-sans">{log.keeper}</span>
-                      <span className="text-[10px] text-neutral-400">{log.time}</span>
-                    </div>
+                {dynamicLogs.length === 0 ? (
+                  <div className="py-8 text-center text-neutral-400 font-sans text-xs italic">
+                    No match events recorded on-chain or in active keeper loop yet.
+                    <br />
+                    Start the Keeper Bot or deploy matching orders to see live execution logs.
                   </div>
-                ))}
+                ) : (
+                  dynamicLogs.map((log, idx) => (
+                    <div key={idx} className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-neutral-50 pb-3 last:border-none last:pb-0">
+                      <div className="flex items-start gap-2">
+                        <span
+                          className={`text-[10px] font-bold shrink-0 px-1.5 py-0.5 rounded ${
+                            log.status === 'SUCCESS'
+                              ? 'bg-emerald-50 text-emerald-700'
+                              : log.status === 'SWEEP'
+                              ? 'bg-blue-50 text-blue-700'
+                              : 'bg-neutral-100 text-neutral-500'
+                          }`}
+                        >
+                          {log.status}
+                        </span>
+                        <span className="text-neutral-600 font-sans text-[11px]">{log.detail}</span>
+                      </div>
+                      <div className="flex items-center gap-3 shrink-0">
+                        <span className="text-[9px] text-neutral-400 font-sans">{log.keeper}</span>
+                        <span className="text-[10px] text-neutral-400">{log.time}</span>
+                      </div>
+                    </div>
+                  ))
+                )}
               </div>
             </div>
 
@@ -158,6 +458,9 @@ export default function KeepersPage() {
 
         {activeSection === 'guide' && (
           <div data-reveal className="reveal-fade-up flex flex-col gap-8">
+            {/* Local automation control panel */}
+            <KeeperBotPanel />
+
             {/* Setup Guide */}
             <div className="border border-neutral-100 rounded-2xl p-6 bg-white shadow-sm">
               <h3 className="text-lg font-bold text-black mb-4">Run Your Own Keeper</h3>

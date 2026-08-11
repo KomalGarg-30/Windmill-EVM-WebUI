@@ -64,7 +64,7 @@ export const SUPPORTED_CHAINS: Record<number, ChainConfig> = {
     chainId: 11155111,
     name: 'Sepolia Testnet',
     shortName: 'Sepolia',
-    rpcUrl: 'https://rpc.sepolia.org',
+    rpcUrl: 'https://ethereum-sepolia-rpc.publicnode.com',
     explorerUrl: 'https://sepolia.etherscan.io',
     nativeCurrency: { name: 'Ether', symbol: 'ETH', decimals: 18 },
     contractAddress: process.env.NEXT_PUBLIC_CONTRACT_ADDRESS_SEPOLIA || '',
