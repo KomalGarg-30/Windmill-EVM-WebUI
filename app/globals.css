@@ -290,6 +290,18 @@ body {
   transform: translateY(-4px);
 }
 
+.section-padding {
+  padding-top: 6rem;
+  padding-bottom: 6rem;
+}
+
+.hero-grid-pattern {
+  background-image:
+    linear-gradient(to right, var(--grid-line, rgba(0, 0, 0, 0.06)) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--grid-line, rgba(0, 0, 0, 0.06)) 1px, transparent 1px);
+  background-size: 48px 48px;
+}
+
 :root {
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
