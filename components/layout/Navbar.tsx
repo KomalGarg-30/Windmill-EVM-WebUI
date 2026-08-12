@@ -35,7 +35,7 @@ export default function Navbar() {
     <div className="fixed top-6 left-0 right-0 z-50 flex justify-center w-full pointer-events-none">
       <BaseNavbar className="w-full max-w-4xl pointer-events-auto">
         {/* Desktop Navigation using resizable NavBody */}
-        <NavBody className="glass-pill border border-neutral-100 bg-white/75 shadow-lg min-w-[768px]">
+        <NavBody className="min-w-[768px]">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 group cursor-pointer mr-6 shrink-0">
             <div className="flex h-7.5 w-7.5 items-center justify-center rounded-full bg-black text-white font-bold text-sm">
@@ -104,7 +104,7 @@ export default function Navbar() {
         </NavBody>
 
         {/* Mobile Navigation */}
-        <MobileNav className="glass-pill border border-neutral-100 bg-white/75 shadow-lg w-full max-w-[calc(100vw-2rem)]">
+        <MobileNav className="w-full max-w-[calc(100vw-2rem)]">
           <MobileNavHeader className="px-4 py-2">
             {/* Logo */}
             <Link href="/" className="flex items-center gap-2">

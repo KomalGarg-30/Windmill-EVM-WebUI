@@ -77,7 +77,7 @@ export const NavBody = ({ children, className, visible }: NavBodyProps) => {
       className={cn(
         'relative z-[60] mx-auto hidden w-full flex-row items-center justify-between rounded-full px-6 py-2.5 lg:flex',
         visible 
-          ? 'w-[70%] max-w-4xl bg-white/85 backdrop-blur-xl border border-black/5 shadow-md translate-y-4' 
+          ? 'w-[70%] max-w-4xl bg-white border border-black/10 shadow-md translate-y-4' 
           : 'w-full max-w-5xl bg-transparent border border-transparent translate-y-0',
         className
       )}
@@ -125,7 +125,7 @@ export const MobileNav = ({ children, className, visible }: MobileNavProps) => {
       className={cn(
         'relative z-50 mx-auto flex w-full max-w-[calc(100vw-2rem)] flex-col items-center justify-between bg-transparent px-4 py-3.5 lg:hidden rounded-full',
         visible 
-          ? 'w-[85%] bg-white/85 backdrop-blur-xl border border-black/5 shadow-md translate-y-4' 
+          ? 'w-[85%] bg-white border border-black/10 shadow-md translate-y-4' 
           : 'w-full bg-transparent border border-transparent translate-y-0',
         className
       )}
