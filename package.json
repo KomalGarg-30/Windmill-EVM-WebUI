@@ -1,5 +1,5 @@
 {
-  "name": "todo",
+  "name": "windmill-evm-webui",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -10,7 +10,10 @@
   },
   "dependencies": {
     "clsx": "^2.1.1",
+    "ethers": "^6.15.0",
     "framer-motion": "^12.42.2",
+    "lightweight-charts": "^5.2.0",
+    "lucide-react": "^1.28.0",
     "next": "16.1.6",
     "react": "19.2.3",
     "react-dom": "19.2.3",

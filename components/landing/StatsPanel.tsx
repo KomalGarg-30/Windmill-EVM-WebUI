@@ -79,8 +79,6 @@ export default function StatsPanel() {
     }
   };
 
-  const illustrativeStats = STATS.filter((s) => s.illustrative);
-
   return (
     <div className="w-full flex flex-col items-center gap-6 mt-16 px-4">
       {/* 3D Tilting Stats Card */}
@@ -94,7 +92,7 @@ export default function StatsPanel() {
         }}
         className="w-full max-w-4xl bg-white border border-neutral-100 rounded-3xl p-6 sm:p-8 shadow-xl flex flex-col sm:flex-row items-center justify-between gap-6 sm:gap-4 select-none hover:shadow-2xl cursor-default"
       >
-        {illustrativeStats.map((stat, idx) => (
+        {STATS.map((stat, idx) => (
           <React.Fragment key={stat.label}>
             <div className="flex items-center gap-4 flex-1 justify-center sm:justify-start w-full px-4">
               <div className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-full ${stat.bgClass} ${stat.textClass}`}>
@@ -109,7 +107,7 @@ export default function StatsPanel() {
                 </span>
               </div>
             </div>
-            {idx < illustrativeStats.length - 1 && (
+            {idx < STATS.length - 1 && (
               <div className="hidden sm:block w-[1px] h-10 bg-neutral-100" />
             )}
           </React.Fragment>
@@ -118,10 +116,7 @@ export default function StatsPanel() {
 
       {/* WHY WINDMILL centered label */}
       <div className="flex flex-col items-center gap-1 mt-4">
-        <span className="text-[9px] font-semibold text-neutral-400 uppercase tracking-wider text-center">
-          *Stats are illustrative placeholders for protocol historical performance.
-        </span>
-        <span className="text-[10px] font-extrabold tracking-[0.2em] text-neutral-400 uppercase font-sans mt-2">
+        <span className="text-[10px] font-extrabold tracking-[0.2em] text-neutral-400 uppercase font-sans">
           WHY WINDMILL?
         </span>
       </div>

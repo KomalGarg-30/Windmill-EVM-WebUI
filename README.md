@@ -11,7 +11,7 @@
 
 <div align="center">
 
-[![Static Badge](https://img.shields.io/badge/Stability_Nexus-Windmill_Exchange-228B22?style=for-the-badge&labelColor=FFC517)](https://github.com/StabilityNexus/Windmill-EVM-WebUI)
+[![Static Badge](https://img.shields.io/badge/Stability_Nexus-Windmill_Exchange_WebUI-228B22?style=for-the-badge&labelColor=FFC517)](https://stability.nexus/)
 
 </div>
 
@@ -103,6 +103,9 @@ npm run build      # production build
 npm run lint       # ESLint
 npx tsc --noEmit   # TypeScript type-check
 ```
+Access the application at [http://localhost:3000](http://localhost:3000).
+
+### Build for Production
 
 ### Test
 

@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { Mail } from 'lucide-react';
 
 interface SupportFormProps {
   theme?: 'light' | 'dark';
@@ -29,8 +30,8 @@ export default function SupportForm({ theme = 'light' }: SupportFormProps) {
         Open Support Ticket
       </h3>
       {ticketSubmitted ? (
-        <div className="text-center py-10">
-          <span className="text-3xl">✉️</span>
+        <div className="flex flex-col items-center justify-center py-10 text-center">
+          <Mail className={`w-8 h-8 ${isDark ? 'text-neutral-400' : 'text-neutral-600'}`} />
           <h4 className={`text-sm font-semibold mt-4 ${isDark ? 'text-emerald-400' : 'text-black'}`}>
             Ticket Submitted!
           </h4>
