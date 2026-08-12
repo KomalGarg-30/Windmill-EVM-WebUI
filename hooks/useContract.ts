@@ -190,7 +190,7 @@ export function useContract() {
   );
 
   const fetchEvents = useCallback(
-    async (eventName: string, fromBlock: number = -10000) => {
+    async (eventName: string, fromBlock: number = 0) => {
       if (!contractAddress || !rpcUrl) {
         return { data: null, error: 'Contract or RPC not configured' };
       }

@@ -27,6 +27,46 @@ interface Order {
   onChain: boolean;
 }
 
+function parseRay(raw: unknown): number {
+  if (raw === undefined || raw === null || raw === '') return 0;
+  try {
+    const str = typeof raw === 'object' && raw !== null ? raw.toString() : String(raw);
+    const big = BigInt(str);
+    if (big === BigInt(0)) return 0;
+    const sign = big < BigInt(0) ? BigInt(-1) : BigInt(1);
+    const absBig = big < BigInt(0) ? -big : big;
+    const scale18 = BigInt('1000000000000000000');
+    const whole = absBig / scale18;
+    const rem = absBig % scale18;
+    const num = (Number(whole) / 1e9 + Number(rem) / 1e27) * Number(sign);
+    return Math.round(num * 1e8) / 1e8;
+  } catch {
+    return Number(raw) / 1e27 || 0;
+  }
+}
+
+function toRayString(val: number): string {
+  if (!val || isNaN(val)) return '0';
+  const isNeg = val < 0;
+  const absVal = Math.abs(val);
+  const str = absVal.toFixed(9);
+  const [intPart, decPart] = str.split('.');
+  const scale27 = BigInt('1000000000000000000000000000');
+  const scale18 = BigInt('1000000000000000000');
+  const combined = BigInt(intPart) * scale27 + BigInt(decPart) * scale18;
+  return (isNeg ? '-' : '') + combined.toString();
+}
+
+function formatPrice(val: number): string {
+  if (val === undefined || val === null || isNaN(val)) return '0';
+  const rounded = Math.round(val * 1e6) / 1e6;
+  if (Number.isInteger(rounded)) {
+    return rounded.toString();
+  }
+  return rounded.toString();
+}
+
+
 export default function DashboardPage() {
   const { isConnected, setWalletModalOpen, fullAddress, chainId, network } = useWallet();
   const { contractAddress, writeContract, readContract, readERC20, approveERC20, isReady } = useContract();
@@ -47,9 +87,22 @@ export default function DashboardPage() {
 
   // ── Orders State ──────────────────────────────────────────────────
   const [orders, setOrders] = useState<Order[]>([]);
-  const activeOrders = useMemo(() => orders.filter((o) => o.active), [orders]);
+  const activeOrders = useMemo(() => {
+    if (!fullAddress) return [];
+    return orders.filter(
+      (o) => o.active && o.maker && o.maker.toLowerCase() === fullAddress.toLowerCase()
+    );
+  }, [orders, fullAddress]);
 
-  const [settledHistory, setSettledHistory] = useState<Array<{ id: number; pair: string; amount: string; price: string; age: string; txHash: string }>>([]);
+  const [settledHistory, setSettledHistory] = useState<Array<{ id: number; pair: string; amount: string; price: string; age: string; txHash: string }>>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const saved = localStorage.getItem('windmill_settled_history');
+        if (saved) return JSON.parse(saved);
+      } catch {}
+    }
+    return [];
+  });
 
   // ── Stats ─────────────────────────────────────────────────────────
   const [totalOrders, setTotalOrders] = useState<number | null>(null);
@@ -64,35 +117,194 @@ export default function DashboardPage() {
   // ── Fetch on-chain data ───────────────────────────────────────────
   const { fetchEvents } = useContract();
 
+  // ── Persistent refs to prevent state overwrites on polling ──────
+  const inactiveOrderIdsRef = useRef<Set<number>>(new Set());
+  const simulatedSettledRef = useRef<Array<{ id: number; pair: string; amount: string; price: string; age: string; txHash: string }>>([]);
+
+  // Load persistent simulated & inactive state on mount
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const savedSim = localStorage.getItem('windmill_simulated_settled');
+        if (savedSim) {
+          simulatedSettledRef.current = JSON.parse(savedSim);
+        }
+        const savedInactive = localStorage.getItem('windmill_inactive_order_ids');
+        if (savedInactive) {
+          const arr = JSON.parse(savedInactive);
+          inactiveOrderIdsRef.current = new Set(arr);
+        }
+      } catch {}
+    }
+  }, []);
+
   useEffect(() => {
     if (!isReady) return;
 
     const fetchData = async () => {
-      const [totalResult, pausedResult, matchedLogs] = await Promise.all([
-        readContract('totalOrders'),
-        readContract('paused'),
-        fetchEvents('OrderMatched'),
-      ]);
-      if (totalResult.data !== null) setTotalOrders(Number(totalResult.data));
-      if (pausedResult.data !== null) setIsPaused(Boolean(pausedResult.data));
-      if (matchedLogs.data && Array.isArray(matchedLogs.data)) {
-        const parsed = matchedLogs.data.map((log: unknown) => {
-          const l = log as { args?: { buyOrderId?: bigint; executedQuantity?: bigint; settlementPrice?: bigint }; transactionHash?: string };
-          return {
-            id: Number(l.args?.buyOrderId || 0),
-            pair: 'On-Chain Match',
-            amount: (Number(l.args?.executedQuantity || 0) / 1e18).toFixed(2),
-            price: `$${(Number(l.args?.settlementPrice || 0) / 1e18).toFixed(2)}`,
-            age: 'Settled',
-            txHash: l.transactionHash || '',
-          };
+      try {
+        const [totalResult, pausedResult, matchedLogs, cancelledLogs, filledLogs] = await Promise.all([
+          readContract('totalOrders'),
+          readContract('paused'),
+          fetchEvents('OrderMatched'),
+          fetchEvents('OrderCancelled'),
+          fetchEvents('OrderFilled'),
+        ]);
+
+        const totalCount = totalResult.data !== null ? Number(totalResult.data) : 0;
+        if (totalResult.data !== null) setTotalOrders(totalCount);
+        if (pausedResult.data !== null) setIsPaused(Boolean(pausedResult.data));
+
+        // Track on-chain deactivated orders
+        if (matchedLogs.data && Array.isArray(matchedLogs.data)) {
+          matchedLogs.data.forEach((log: unknown) => {
+            const l = log as { args?: Record<string, unknown> | unknown[] };
+            const args = l.args || {};
+            const buyId = Number((args as Record<string, unknown>).buyOrderId ?? (args as unknown[])[0] ?? 0);
+            const sellId = Number((args as Record<string, unknown>).sellOrderId ?? (args as unknown[])[1] ?? 0);
+            if (buyId) inactiveOrderIdsRef.current.add(buyId);
+            if (sellId) inactiveOrderIdsRef.current.add(sellId);
+          });
+        }
+
+        if (cancelledLogs.data && Array.isArray(cancelledLogs.data)) {
+          cancelledLogs.data.forEach((log: unknown) => {
+            const l = log as { args?: Record<string, unknown> | unknown[] };
+            const args = l.args || {};
+            const orderId = Number((args as Record<string, unknown>).orderId ?? (args as unknown[])[0] ?? 0);
+            if (orderId) inactiveOrderIdsRef.current.add(orderId);
+          });
+        }
+
+        if (filledLogs.data && Array.isArray(filledLogs.data)) {
+          filledLogs.data.forEach((log: unknown) => {
+            const l = log as { args?: Record<string, unknown> | unknown[] };
+            const args = l.args || {};
+            const orderId = Number((args as Record<string, unknown>).orderId ?? (args as unknown[])[0] ?? 0);
+            if (orderId) inactiveOrderIdsRef.current.add(orderId);
+          });
+        }
+
+        // Build Settled Matches History from OrderMatched logs + simulated settled items
+        const parsedOnChain: Array<{ id: number; pair: string; amount: string; price: string; age: string; txHash: string }> = [];
+        if (matchedLogs.data && Array.isArray(matchedLogs.data)) {
+          matchedLogs.data.forEach((log: unknown) => {
+            const l = log as { args?: Record<string, unknown> | unknown[]; transactionHash?: string };
+            const args = l.args || {};
+            const buyId = Number((args as Record<string, unknown>).buyOrderId ?? (args as unknown[])[0] ?? 0);
+            const sellId = Number((args as Record<string, unknown>).sellOrderId ?? (args as unknown[])[1] ?? 0);
+            const priceRaw = (args as Record<string, unknown>).settlementPrice ?? (args as unknown[])[3] ?? 0;
+            const qtyRaw = (args as Record<string, unknown>).executedQuantity ?? (args as unknown[])[4] ?? 0;
+
+            const priceVal = parseRay(priceRaw);
+            const qtyNum = Number(qtyRaw);
+            const amountFormatted = qtyNum > 1e10 ? (qtyNum / 1e18).toFixed(4) : (qtyNum / 1e6).toFixed(2);
+
+            parsedOnChain.push({
+              id: buyId,
+              pair: `Buy #${buyId} ↔ Sell #${sellId}`,
+              amount: amountFormatted,
+              price: `$${priceVal > 0 ? formatPrice(priceVal) : '3000'}`,
+              age: 'Settled',
+              txHash: l.transactionHash || '',
+            });
+          });
+        }
+
+        const combinedSettled = [...parsedOnChain.reverse()];
+        simulatedSettledRef.current.forEach((sim) => {
+          if (!combinedSettled.some((c) => c.id === sim.id)) {
+            combinedSettled.push(sim);
+          }
         });
-        setSettledHistory(parsed.reverse());
+        if (combinedSettled.length > 0) {
+          setSettledHistory(combinedSettled);
+          if (typeof window !== 'undefined') {
+            try {
+              localStorage.setItem('windmill_settled_history', JSON.stringify(combinedSettled));
+            } catch {}
+          }
+        }
+
+        // Fetch on-chain order details 1..totalCount and sync UI state
+        if (totalCount > 0) {
+          const orderPromises = [];
+          for (let i = 1; i <= totalCount; i++) {
+            orderPromises.push(readContract('getOrder', [i]));
+          }
+          const orderResults = await Promise.all(orderPromises);
+          const fetchedOrders: Order[] = [];
+
+          orderResults.forEach((res, idx) => {
+            if (!res.data) return;
+            const o = res.data as Record<string, unknown> | unknown[];
+            const id = Number((o as Record<string, unknown>).id ?? (o as unknown[])[0] ?? idx + 1);
+            const rawActive = Boolean((o as Record<string, unknown>).active ?? (o as unknown[])[3]);
+            const remainingInRaw = (o as Record<string, unknown>).remainingIn ?? (o as unknown[])[7] ?? 0;
+            const isBuy = Boolean((o as Record<string, unknown>).isBuy ?? (o as unknown[])[2]);
+
+            const isActive =
+              rawActive &&
+              BigInt(remainingInRaw.toString()) > BigInt(0) &&
+              !inactiveOrderIdsRef.current.has(id);
+
+            const tokenInAddr = String((o as Record<string, unknown>).tokenIn ?? (o as unknown[])[4] ?? '');
+            const tokenOutAddr = String((o as Record<string, unknown>).tokenOut ?? (o as unknown[])[5] ?? '');
+
+            const tokenInMeta = SUPPORTED_TOKENS.find(
+              (t) => chainId && t.addresses[chainId]?.toLowerCase() === tokenInAddr.toLowerCase()
+            );
+            const tokenOutMeta = SUPPORTED_TOKENS.find(
+              (t) => chainId && t.addresses[chainId]?.toLowerCase() === tokenOutAddr.toLowerCase()
+            );
+
+            const decimals = tokenInMeta?.decimals || (isBuy ? 18 : 6);
+            const amountInRaw = (o as Record<string, unknown>).amountIn ?? (o as unknown[])[6] ?? 0;
+            const amt = Number(amountInRaw.toString()) / 10 ** decimals;
+            const startPriceRaw = (o as Record<string, unknown>).startPrice ?? (o as unknown[])[8] ?? 0;
+            const startP = parseRay(startPriceRaw);
+            const slopeRaw = (o as Record<string, unknown>).slope ?? (o as unknown[])[9] ?? 0;
+            const slopeP = parseRay(slopeRaw);
+            const minPriceRaw = (o as Record<string, unknown>).minPrice ?? (o as unknown[])[10] ?? 0;
+            const minP = parseRay(minPriceRaw);
+            const maxPriceRaw = (o as Record<string, unknown>).maxPrice ?? (o as unknown[])[11] ?? 0;
+            const maxP = parseRay(maxPriceRaw);
+            const createdAtRaw = (o as Record<string, unknown>).createdAt ?? (o as unknown[])[12] ?? 0;
+            const expiryRaw = (o as Record<string, unknown>).expiry ?? (o as unknown[])[13] ?? 0;
+            const makerRaw = (o as Record<string, unknown>).maker ?? (o as unknown[])[1] ?? '';
+
+            fetchedOrders.push({
+              id,
+              type: isBuy ? 'Buy' : 'Sell',
+              tokenIn: tokenInAddr,
+              tokenOut: tokenOutAddr,
+              tokenInSymbol: tokenInMeta?.symbol || (isBuy ? 'WETH' : 'USDC'),
+              tokenOutSymbol: tokenOutMeta?.symbol || (isBuy ? 'USDC' : 'WETH'),
+              amount: amt > 0 ? amt : isBuy ? 1 : 3000,
+              startPrice: startP,
+              currentPrice: startP,
+              slope: slopeP,
+              minPrice: minP,
+              maxPrice: maxP,
+              expiry: Number(expiryRaw.toString()),
+              createdAt: Number(createdAtRaw.toString() || Date.now() / 1000) * 1000,
+              active: isActive,
+              maker: String(makerRaw),
+              onChain: true,
+            });
+          });
+
+          setOrders(fetchedOrders);
+        }
+      } catch (err) {
+        console.error('Error fetching on-chain data:', err);
       }
     };
 
     fetchData();
-  }, [isReady, readContract, fetchEvents]);
+    const interval = setInterval(fetchData, 2000);
+    return () => clearInterval(interval);
+  }, [isReady, readContract, fetchEvents, chainId]);
 
   // ── Dynamic price calculation loop for deployed orders ────────────
   useEffect(() => {
@@ -100,12 +312,19 @@ export default function DashboardPage() {
       setOrders((prevOrders) =>
         prevOrders.map((ord) => {
           if (!ord.active) return ord;
+          if (Math.abs(ord.slope) < 1e-9) {
+            if (ord.currentPrice !== ord.startPrice) {
+              return { ...ord, currentPrice: ord.startPrice };
+            }
+            return ord;
+          }
           const deltaT = (Date.now() - ord.createdAt) / 1000;
           let calculated = ord.startPrice + ord.slope * deltaT;
           // Clamp to min/max bounds
           if (ord.minPrice > 0) calculated = Math.max(ord.minPrice, calculated);
           if (ord.maxPrice > 0) calculated = Math.min(ord.maxPrice, calculated);
-          const currentPrice = Math.max(0.01, Number(calculated.toFixed(2)));
+          const currentPrice = Math.max(0.01, Math.round(calculated * 1e4) / 1e4);
+          if (ord.currentPrice === currentPrice) return ord;
           return { ...ord, currentPrice };
         })
       );
@@ -140,10 +359,10 @@ export default function DashboardPage() {
           const amountWei = BigInt(Math.floor(amount * 10 ** decimals)).toString();
 
           // Price in RAY (1e27)
-          const priceRay = BigInt(Math.floor(startPrice * 1e18)).toString() + '000000000';
-          const slopeRay = (slope >= 0 ? '' : '-') + BigInt(Math.floor(Math.abs(slope) * 1e18)).toString() + '000000000';
-          const minPriceRay = minPrice > 0 ? BigInt(Math.floor(minPrice * 1e18)).toString() + '000000000' : '0';
-          const maxPriceRay = maxPrice > 0 ? BigInt(Math.floor(maxPrice * 1e18)).toString() + '000000000' : '0';
+          const priceRay = toRayString(startPrice);
+          const slopeRay = toRayString(slope);
+          const minPriceRay = minPrice > 0 ? toRayString(minPrice) : '0';
+          const maxPriceRay = maxPrice > 0 ? toRayString(maxPrice) : '0';
           const expiryTs = expiry ? Math.floor(new Date(expiry).getTime() / 1000).toString() : '0';
 
           // Check and request ERC-20 approval
@@ -186,27 +405,6 @@ export default function DashboardPage() {
 
           setTxStatus(`Order submitted! Tx: ${txHash?.slice(0, 10)}...`);
 
-          // Add to local state
-          const newOrder: Order = {
-            id: nextIdRef.current++,
-            type: orderType,
-            tokenIn: tokenInAddr,
-            tokenOut: tokenOutAddr,
-            tokenInSymbol: tokenIn,
-            tokenOutSymbol: tokenOut,
-            amount,
-            startPrice,
-            currentPrice: startPrice,
-            slope,
-            minPrice,
-            maxPrice,
-            expiry: expiry ? Math.floor(new Date(expiry).getTime() / 1000) : 0,
-            createdAt: Date.now(),
-            active: true,
-            maker: fullAddress || '',
-            onChain: true,
-          };
-          setOrders((prev) => [newOrder, ...prev]);
           setIsSubmitting(false);
           setAmount(1);
           setTimeout(() => setTxStatus(null), 5000);
@@ -227,10 +425,16 @@ export default function DashboardPage() {
   // ── Cancel Order Handler ──────────────────────────────────────────
   const handleCancelOrder = useCallback(
     async (orderId: number) => {
-      const order = orders.find((o) => o.id === orderId);
-      if (!order) return;
+      inactiveOrderIdsRef.current.add(orderId);
+      if (typeof window !== 'undefined') {
+        try {
+          localStorage.setItem('windmill_inactive_order_ids', JSON.stringify(Array.from(inactiveOrderIdsRef.current)));
+        } catch {}
+      }
+      setOrders((prev) => prev.map((o) => (o.id === orderId ? { ...o, active: false } : o)));
 
-      if (order.onChain && isReady) {
+      const order = orders.find((o) => o.id === orderId);
+      if (order && order.onChain && isReady) {
         const { error } = await writeContract('cancelOrder', [orderId]);
         if (error) {
           setTxStatus(`Cancel failed: ${error}`);
@@ -239,36 +443,64 @@ export default function DashboardPage() {
         setTxStatus(`Order #${orderId} cancelled on-chain`);
       }
 
-      setOrders((prev) => prev.map((o) => (o.id === orderId ? { ...o, active: false } : o)));
       setTimeout(() => setTxStatus(null), 3000);
     },
     [orders, isReady, writeContract]
   );
 
   // ── Simulate Sweep Handler ────────────────────────────────────────
-  const handleSimulateSweep = (orderId: number) => {
-    setOrders((prev) =>
-      prev.map((ord) => {
-        if (ord.id === orderId) return { ...ord, active: false };
-        return ord;
-      })
-    );
+  const handleSimulateSweep = useCallback(
+    (orderId: number) => {
+      inactiveOrderIdsRef.current.add(orderId);
+      if (typeof window !== 'undefined') {
+        try {
+          localStorage.setItem('windmill_inactive_order_ids', JSON.stringify(Array.from(inactiveOrderIdsRef.current)));
+        } catch {}
+      }
 
-    const matched = orders.find((o) => o.id === orderId);
-    if (matched) {
-      setSettledHistory((prev) => [
-        {
+      setOrders((prev) =>
+        prev.map((ord) => {
+          if (ord.id === orderId) return { ...ord, active: false };
+          return ord;
+        })
+      );
+
+      const matched = orders.find((o) => o.id === orderId);
+      if (matched) {
+        const newItem = {
           id: matched.id,
           pair: `${matched.tokenInSymbol}/${matched.tokenOutSymbol}`,
           amount: matched.amount.toString(),
-          price: `$${matched.currentPrice.toLocaleString()}`,
+          price: `$${formatPrice(matched.currentPrice)}`,
           age: 'Just now',
           txHash: '',
-        },
-        ...prev,
-      ]);
-    }
-  };
+        };
+
+        if (!simulatedSettledRef.current.some((s) => s.id === matched.id)) {
+          simulatedSettledRef.current = [newItem, ...simulatedSettledRef.current];
+          if (typeof window !== 'undefined') {
+            try {
+              localStorage.setItem('windmill_simulated_settled', JSON.stringify(simulatedSettledRef.current));
+            } catch {}
+          }
+        }
+
+        setSettledHistory((prev) => {
+          const updated = [
+            newItem,
+            ...prev.filter((item) => item.id !== matched.id || item.txHash !== ''),
+          ];
+          if (typeof window !== 'undefined') {
+            try {
+              localStorage.setItem('windmill_settled_history', JSON.stringify(updated));
+            } catch {}
+          }
+          return updated;
+        });
+      }
+    },
+    [orders]
+  );
 
   // ── Price curve SVG renderer ──────────────────────────────────────
   const renderPriceCurve = (order: Order) => {
@@ -596,25 +828,25 @@ export default function DashboardPage() {
                           <div className="flex flex-col gap-0.5 text-xs text-neutral-500 mt-1">
                             <div className="flex items-center gap-4">
                               <span>
-                                Start: <span className="font-semibold text-black">${order.startPrice}</span>
+                                Start: <span className="font-semibold text-black">${formatPrice(order.startPrice)}</span>
                               </span>
                               <span>
                                 Slope:{' '}
                                 <span className="font-semibold text-black">
-                                  {order.slope > 0 ? `+${order.slope}` : order.slope} /s
+                                  {order.slope > 0 ? `+${formatPrice(order.slope)}` : formatPrice(order.slope)} /s
                                 </span>
                               </span>
                             </div>
                             {(order.minPrice > 0 || order.maxPrice > 0) && (
                               <div className="flex items-center gap-4">
-                                {order.minPrice > 0 && <span>Min: ${order.minPrice}</span>}
-                                {order.maxPrice > 0 && <span>Max: ${order.maxPrice}</span>}
+                                {order.minPrice > 0 && <span>Min: ${formatPrice(order.minPrice)}</span>}
+                                {order.maxPrice > 0 && <span>Max: ${formatPrice(order.maxPrice)}</span>}
                               </div>
                             )}
                             <div className="flex items-center gap-1.5 mt-1 font-semibold text-black">
                               Current Price:
                               <span className="text-black font-mono font-bold animate-pulse text-sm">
-                                ${order.currentPrice}
+                                ${formatPrice(order.currentPrice)}
                               </span>
                             </div>
                           </div>

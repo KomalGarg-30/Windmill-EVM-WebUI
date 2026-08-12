@@ -478,8 +478,8 @@ export default function KeepersPage() {
                   <div className="flex-1">
                     <h4 className="text-sm font-bold text-black">Clone & Install</h4>
                     <div className="bg-neutral-50 border border-neutral-100 rounded-xl p-4 font-mono text-xs text-black mt-2 overflow-x-auto">
-                      <pre className="whitespace-pre">{`git clone https://github.com/StabilityNexus/Windmill-EVM-Contracts.git
-cd Windmill-EVM-Contracts/Windmill-EVM-Keeper2
+                      <pre className="whitespace-pre">{`git clone https://github.com/StabilityNexus/Windmill-EVM-Keeper.git
+cd Windmill-EVM-Keeper
 npm ci`}</pre>
                     </div>
                   </div>

@@ -19,7 +19,7 @@ export default function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [networkDropdownOpen, setNetworkDropdownOpen] = useState(false);
 
-  const networks = ['Ethereum', 'Sepolia', 'Base', 'Polygon', 'BSC', 'ETC'];
+  const networks = ['Localhost', 'Sepolia', 'Ethereum', 'Base', 'Polygon', 'BSC', 'ETC'];
 
   const navItems = [
     { name: 'Home', link: '/' },
