@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { useWallet } from '@/context/WalletContext';
 import { useContract } from '@/hooks/useContract';
-import { SUPPORTED_TOKENS, getTokenAddress, SUPPORTED_CHAINS, getExplorerTxUrl } from '@/lib/contractConfig';
+import { SUPPORTED_TOKENS, getTokenAddress } from '@/lib/contractConfig';
 import WalletModal from '@/components/wallet/WalletModal';
 import { Zap, X } from 'lucide-react';
 
@@ -76,14 +76,17 @@ export default function DashboardPage() {
       if (totalResult.data !== null) setTotalOrders(Number(totalResult.data));
       if (pausedResult.data !== null) setIsPaused(Boolean(pausedResult.data));
       if (matchedLogs.data && Array.isArray(matchedLogs.data)) {
-        const parsed = matchedLogs.data.map((log: any) => ({
-          id: Number(log.args?.buyOrderId || 0),
-          pair: 'On-Chain Match',
-          amount: (Number(log.args?.executedQuantity || 0) / 1e18).toFixed(2),
-          price: `$${(Number(log.args?.settlementPrice || 0) / 1e18).toFixed(2)}`,
-          age: 'Settled',
-          txHash: log.transactionHash || '',
-        }));
+        const parsed = matchedLogs.data.map((log: unknown) => {
+          const l = log as { args?: { buyOrderId?: bigint; executedQuantity?: bigint; settlementPrice?: bigint }; transactionHash?: string };
+          return {
+            id: Number(l.args?.buyOrderId || 0),
+            pair: 'On-Chain Match',
+            amount: (Number(l.args?.executedQuantity || 0) / 1e18).toFixed(2),
+            price: `$${(Number(l.args?.settlementPrice || 0) / 1e18).toFixed(2)}`,
+            age: 'Settled',
+            txHash: l.transactionHash || '',
+          };
+        });
         setSettledHistory(parsed.reverse());
       }
     };

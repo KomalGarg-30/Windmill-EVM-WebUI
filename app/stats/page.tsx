@@ -3,7 +3,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import WalletModal from '@/components/wallet/WalletModal';
-import { useWallet } from '@/context/WalletContext';
 import { useContract } from '@/hooks/useContract';
 import { SUPPORTED_CHAINS } from '@/lib/contractConfig';
 import { useScrollRevealChildren } from '@/hooks/useScrollReveal';
@@ -29,7 +28,6 @@ interface StatCard {
 }
 
 export default function StatsPage() {
-  const { chainId, isConnected } = useWallet();
   const { readContract, isReady } = useContract();
   const containerRef = useScrollRevealChildren<HTMLDivElement>({ threshold: 0.1 });
 
