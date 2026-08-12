@@ -59,6 +59,17 @@ export interface ChainConfig {
 }
 
 export const SUPPORTED_CHAINS: Record<number, ChainConfig> = {
+  // ── Localhost / Anvil ──
+  31337: {
+    chainId: 31337,
+    name: 'Anvil Localhost',
+    shortName: 'Localhost',
+    rpcUrl: process.env.NEXT_PUBLIC_RPC_URL || 'http://127.0.0.1:8545',
+    explorerUrl: 'http://localhost:8545',
+    nativeCurrency: { name: 'Ether', symbol: 'ETH', decimals: 18 },
+    contractAddress: process.env.NEXT_PUBLIC_CONTRACT_ADDRESS_LOCAL || process.env.NEXT_PUBLIC_CONTRACT_ADDRESS_SEPOLIA || '0x96dce657ba9bd3db2533bbee0b2e2dbf334232d2',
+    wethAddress: '0x7b79995e5f793A07Bc00c21412e50Ecae098E7f9',
+  },
   // ── Testnets ──
   11155111: {
     chainId: 11155111,
@@ -157,6 +168,7 @@ export const SUPPORTED_TOKENS: TokenMeta[] = [
     name: 'Wrapped Ether',
     decimals: 18,
     addresses: {
+      31337: '0x7b79995e5f793A07Bc00c21412e50Ecae098E7f9',
       1: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
       11155111: '0x7b79995e5f793A07Bc00c21412e50Ecae098E7f9',
       8453: '0x4200000000000000000000000000000000000006',
@@ -169,6 +181,7 @@ export const SUPPORTED_TOKENS: TokenMeta[] = [
     name: 'USD Coin',
     decimals: 6,
     addresses: {
+      31337: '0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238',
       1: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
       11155111: '0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238',
       8453: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913',
