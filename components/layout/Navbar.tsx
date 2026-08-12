@@ -33,9 +33,9 @@ export default function Navbar() {
 
   return (
 <div className="fixed top-6 left-0 right-0 z-50 flex justify-center w-full pointer-events-none">
-      <BaseNavbar className="w-full max-w-4xl pointer-events-auto">
+      <BaseNavbar className="w-full max-w-6xl px-4 pointer-events-auto">
         {/* Desktop Navigation using resizable NavBody */}
-        <NavBody className="min-w-[768px]">
+        <NavBody>
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 group cursor-pointer mr-6 shrink-0">
             <img src="/windmill-logo.svg" alt="Windmill" width={32} height={32} className="shrink-0" />
