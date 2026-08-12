@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useWallet } from '@/context/WalletContext';
 import { WINDMILL_EXCHANGE_ABI, ERC20_ABI, SUPPORTED_CHAINS } from '@/lib/contractConfig';
 
@@ -240,8 +240,13 @@ export function useTotalOrders() {
   }, [isReady, readContract]);
 
   useEffect(() => {
-    fetch();
-  }, [fetch]);
+    if (isReady) {
+      const timer = setTimeout(() => {
+        fetch();
+      }, 0);
+      return () => clearTimeout(timer);
+    }
+  }, [isReady, fetch]);
 
   return { total, loading, refetch: fetch };
 }
@@ -255,10 +260,121 @@ export function usePaused() {
 
   useEffect(() => {
     if (!isReady) return;
+    let isMounted = true;
     readContract('paused').then(({ data }) => {
-      if (data !== null) setPaused(Boolean(data));
+      if (isMounted && data !== null) setPaused(Boolean(data));
     });
+    return () => {
+      isMounted = false;
+    };
   }, [isReady, readContract]);
 
   return paused;
 }
+
+/**
+ * useOrderDetails — fetches details for a given orderId.
+ */
+export function useOrderDetails(orderId: number | bigint | null) {
+  const { readContract, isReady } = useContract();
+  const [order, setOrder] = useState<unknown | null>(null);
+  const [currentPriceVal, setCurrentPriceVal] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchDetails = useCallback(async () => {
+    if (!isReady || orderId === null) return;
+    setLoading(true);
+    setError(null);
+    try {
+      const orderRes = await readContract('getOrder', [orderId]);
+      if (orderRes.error) {
+        setError(orderRes.error);
+      } else {
+        setOrder(orderRes.data);
+      }
+
+      const priceRes = await readContract('currentPrice', [orderId, Math.floor(Date.now() / 1000)]);
+      if (!priceRes.error && priceRes.data !== null) {
+        setCurrentPriceVal(String(priceRes.data));
+      }
+    } catch (err) {
+      setError((err as Error).message);
+    } finally {
+      setLoading(false);
+    }
+  }, [isReady, orderId, readContract]);
+
+  useEffect(() => {
+    if (isReady && orderId !== null) {
+      const timer = setTimeout(() => {
+        fetchDetails();
+      }, 0);
+      return () => clearTimeout(timer);
+    }
+  }, [isReady, orderId, fetchDetails]);
+
+  return { order, currentPrice: currentPriceVal, loading, error, refetch: fetchDetails };
+}
+
+/**
+ * useOrderActions — provides createOrder and cancelOrder execution functions.
+ */
+export function useOrderActions() {
+  const { writeContract, approveERC20, isReady } = useContract();
+  const [submitting, setSubmitting] = useState(false);
+
+  const createOrder = useCallback(
+    async (params: {
+      tokenIn: string;
+      tokenOut: string;
+      amountIn: string;
+      startPrice: string;
+      slope: string;
+      minPrice: string;
+      maxPrice: string;
+      expiry: number;
+      isBuy: boolean;
+      value?: string;
+    }) => {
+      setSubmitting(true);
+      try {
+        const res = await writeContract(
+          'createOrder',
+          [
+            params.tokenIn,
+            params.tokenOut,
+            params.amountIn,
+            params.startPrice,
+            params.slope,
+            params.minPrice,
+            params.maxPrice,
+            params.expiry,
+            params.isBuy,
+          ],
+          params.value
+        );
+        return res;
+      } finally {
+        setSubmitting(false);
+      }
+    },
+    [writeContract]
+  );
+
+  const cancelOrder = useCallback(
+    async (orderId: number | bigint) => {
+      setSubmitting(true);
+      try {
+        const res = await writeContract('cancelOrder', [orderId]);
+        return res;
+      } finally {
+        setSubmitting(false);
+      }
+    },
+    [writeContract]
+  );
+
+  return { createOrder, cancelOrder, approveERC20, isReady, submitting };
+}
+

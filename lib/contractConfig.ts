@@ -67,7 +67,7 @@ export const SUPPORTED_CHAINS: Record<number, ChainConfig> = {
     rpcUrl: 'https://ethereum-sepolia-rpc.publicnode.com',
     explorerUrl: 'https://sepolia.etherscan.io',
     nativeCurrency: { name: 'Ether', symbol: 'ETH', decimals: 18 },
-    contractAddress: process.env.NEXT_PUBLIC_CONTRACT_ADDRESS_SEPOLIA || '',
+    contractAddress: process.env.NEXT_PUBLIC_CONTRACT_ADDRESS_SEPOLIA || process.env.NEXT_PUBLIC_WINDMILL_EXCHANGE_ADDRESS || '',
     wethAddress: '0x7b79995e5f793A07Bc00c21412e50Ecae098E7f9',
   },
   // ── Mainnets ──

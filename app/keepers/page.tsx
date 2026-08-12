@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
-import Link from 'next/link';
 import WalletModal from '@/components/wallet/WalletModal';
 import { useScrollRevealChildren } from '@/hooks/useScrollReveal';
 import { useContract } from '@/hooks/useContract';
@@ -275,10 +274,11 @@ export default function KeepersPage() {
       const { data: events } = await fetchEvents('OrderMatched');
       if (events && Array.isArray(events)) {
         setMatchCount(events.length);
-        const parsed = events.slice(-10).map((ev: any) => {
-          const buyId = ev.args?.buyOrderId?.toString() || '?';
-          const sellId = ev.args?.sellOrderId?.toString() || '?';
-          const keeperAddr = ev.args?.keeper ? `${ev.args.keeper.slice(0, 6)}...${ev.args.keeper.slice(-4)}` : 'Node';
+        const parsed = events.slice(-10).map((ev: unknown) => {
+          const e = ev as { args?: { buyOrderId?: bigint; sellOrderId?: bigint; keeper?: string } };
+          const buyId = e.args?.buyOrderId?.toString() || '?';
+          const sellId = e.args?.sellOrderId?.toString() || '?';
+          const keeperAddr = e.args?.keeper ? `${e.args.keeper.slice(0, 6)}...${e.args.keeper.slice(-4)}` : 'Node';
           return {
             status: 'SUCCESS',
             detail: `Buy #${buyId} matched Sell #${sellId} on-chain`,

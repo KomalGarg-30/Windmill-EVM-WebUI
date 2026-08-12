@@ -1,5 +1,4 @@
 import WalletModal from '@/components/wallet/WalletModal';
-import Link from 'next/link';
 import { Lock, Zap, Link2, User, FileText, Bot, ArrowRight } from 'lucide-react';
 
 export default function AboutPage() {

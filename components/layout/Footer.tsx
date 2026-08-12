@@ -95,9 +95,17 @@ export default function Footer() {
               &copy; {new Date().getFullYear()} Stability Nexus. All rights reserved.
             </p>
           </div>
-          <div className="flex gap-6">
-            <a href="#" className="text-xs text-neutral-500 hover:text-neutral-300 transition-colors">Privacy Policy</a>
-            <a href="#" className="text-xs text-neutral-500 hover:text-neutral-300 transition-colors">Terms of Service</a>
+          <div className="flex items-center gap-6">
+            <Link href="/kya" className="text-xs text-neutral-500 hover:text-cyan-400 transition-colors flex items-center gap-1">
+              <span className="inline-block w-1.5 h-1.5 rounded-full bg-cyan-500"></span>
+              KYA (Assumptions)
+            </Link>
+            <Link href="/privacy" className="text-xs text-neutral-500 hover:text-neutral-300 transition-colors">
+              Privacy Policy
+            </Link>
+            <Link href="/terms" className="text-xs text-neutral-500 hover:text-neutral-300 transition-colors">
+              Terms of Service
+            </Link>
           </div>
         </div>
       </div>
