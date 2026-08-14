@@ -77,8 +77,8 @@ export const NavBody = ({ children, className, visible }: NavBodyProps) => {
       className={cn(
         'relative z-[60] mx-auto hidden w-full flex-row items-center justify-between rounded-full px-6 py-2.5 xl:flex',
         visible
-          ? 'w-[85%] max-w-6xl bg-white/85 backdrop-blur-xl border border-black/10 shadow-lg translate-y-4'
-          : 'w-full max-w-6xl bg-transparent border border-transparent translate-y-0',
+          ? 'w-[85%] max-w-6xl glass-pill shadow-lg translate-y-4'
+          : 'w-full max-w-6xl bg-transparent border-transparent translate-y-0',
         className
       )}
     >
@@ -102,14 +102,14 @@ export const NavItems = ({ items, className, onItemClick }: NavItemsProps) => {
         <Link
           onMouseEnter={() => setHovered(idx)}
           onClick={onItemClick}
-          className="relative shrink-0 px-2 xl:px-4 py-1.5 xl:py-2 text-neutral-700 hover:text-black transition-colors duration-200"
+          className="relative min-w-0 shrink px-2 xl:px-3 py-1.5 xl:py-2 text-neutral-700 hover:text-black transition-colors duration-200"
           key={`link-${idx}`}
           href={item.link}
         >
           {hovered === idx && (
             <div className="absolute inset-0 h-full w-full rounded-full bg-neutral-100/70 z-0 animate-fade-in" />
           )}
-          <span className="relative z-10 uppercase tracking-wider text-[10px] font-bold">{item.name}</span>
+          <span className="relative z-10 uppercase tracking-wider text-[10px] font-bold whitespace-nowrap">{item.name}</span>
         </Link>
       ))}
     </div>
@@ -125,8 +125,8 @@ export const MobileNav = ({ children, className, visible }: MobileNavProps) => {
       className={cn(
         'relative z-50 mx-auto flex w-full max-w-[calc(100vw-2rem)] flex-col items-center justify-between bg-transparent px-4 py-3.5 xl:hidden rounded-full',
         visible 
-          ? 'w-[85%] bg-white/85 backdrop-blur-xl border border-black/10 shadow-lg translate-y-4' 
-          : 'w-full bg-transparent border border-transparent translate-y-0',
+          ? 'w-[85%] glass-pill shadow-lg translate-y-4' 
+          : 'w-full bg-transparent border-transparent translate-y-0',
         className
       )}
     >
