@@ -16,7 +16,7 @@ export default function SubPageContainer({ activeTab, setActiveTab }: SubPageCon
 
   return (
     <section className="relative min-h-[70vh] py-32 px-6 bg-neutral-950 text-white flex flex-col justify-start border-t border-white/5">
-      <div className="absolute inset-0 hero-grid-pattern opacity-[0.1] pointer-events-none" />
+      <div className="absolute inset-0 hero-grid-pattern [--grid-line:rgba(255,255,255,0.12)] opacity-[0.1] pointer-events-none" />
       <div className="mx-auto max-w-4xl w-full">
         {/* Navigation back button */}
         <button
