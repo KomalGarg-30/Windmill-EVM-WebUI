@@ -33,9 +33,9 @@ export default function Navbar() {
 
   return (
 <div className="fixed top-6 left-0 right-0 z-50 flex justify-center w-full pointer-events-none">
-      <BaseNavbar className="w-full max-w-4xl pointer-events-auto">
+      <BaseNavbar className="w-full max-w-6xl px-4 pointer-events-auto">
         {/* Desktop Navigation using resizable NavBody */}
-        <NavBody className="glass-pill border border-neutral-100 bg-white/75 shadow-lg min-w-[768px]">
+        <NavBody>
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 group cursor-pointer mr-6 shrink-0">
             <img src="/windmill-logo.svg" alt="Windmill" width={32} height={32} className="shrink-0" />
@@ -102,7 +102,7 @@ export default function Navbar() {
         </NavBody>
 
         {/* Mobile Navigation */}
-        <MobileNav className="glass-pill border border-neutral-100 bg-white/75 shadow-lg w-full max-w-[calc(100vw-2rem)]">
+        <MobileNav className="w-full max-w-[calc(100vw-2rem)]">
           <MobileNavHeader className="px-4 py-2">
             {/* Logo */}
             <Link href="/" className="flex items-center gap-2">
