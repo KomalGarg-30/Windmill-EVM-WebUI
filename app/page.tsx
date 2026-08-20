@@ -1,5 +1,5 @@
 import HeroSection from '@/components/landing/HeroSection';
-import FeaturesSection from '@/components/landing/FeaturesSection';
+import FeatureCards from '@/components/landing/FeatureCards';
 import CTASection from '@/components/landing/CTASection';
 import WalletModal from '@/components/wallet/WalletModal';
 
@@ -10,7 +10,7 @@ export default function Home() {
       <WalletModal />
 
       <HeroSection />
-      <FeaturesSection />
+      <FeatureCards />
       <CTASection />
     </main>
   );
