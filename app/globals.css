@@ -1,13 +1,15 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 /* ═══════════════════════════════════════════════════════════════
    WINDMILL EXCHANGE — Design System
-   Premium Black & White Theme (White Background)
+   Dynamic Theme (Light / Dark / System Cascade)
    ═══════════════════════════════════════════════════════════════ */
 
 @theme inline {
-  --color-background: #ffffff;
-  --color-foreground: #0a0a0a;
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
   --color-brand: #ffc517;
   --color-brand-dark: #e5b015;
   --color-brand-green: #228b22;
@@ -59,16 +61,17 @@ html {
 }
 
 body {
-  background-color: #ffffff;
-  color: #0a0a0a;
+  background-color: var(--background);
+  color: var(--foreground);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 ::selection {
-  background: #000000;
-  color: #ffffff;
+  background: var(--foreground);
+  color: var(--background);
 }
 
 /* ── Custom Scrollbar ──────────────────────────────────────────── */
@@ -77,7 +80,7 @@ body {
   width: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #ffffff;
+  background: var(--background);
 }
 ::-webkit-scrollbar-thumb {
   background: #d4d4d4;
@@ -86,6 +89,12 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: #a3a3a3;
 }
+.dark ::-webkit-scrollbar-thumb {
+  background: #2e2e2e;
+}
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: #454545;
+}
 
 /* ── Premium Background patterns ───────────────────────────────── */
 
@@ -93,13 +102,22 @@ body {
   background-image: radial-gradient(circle, #e5e5e5 1.5px, transparent 1.5px);
   background-size: 32px 32px;
 }
+.dark .bg-light-mesh {
+  background-image: radial-gradient(circle, rgba(255, 255, 255, 0.08) 1.5px, transparent 1.5px);
+}
 
 .glow-spot-light-1 {
   background: radial-gradient(circle, rgba(0, 0, 0, 0.02) 0%, transparent 60%);
 }
+.dark .glow-spot-light-1 {
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.03) 0%, transparent 60%);
+}
 
 .glow-spot-light-2 {
   background: radial-gradient(circle, rgba(0, 0, 0, 0.015) 0%, transparent 70%);
+}
+.dark .glow-spot-light-2 {
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.02) 0%, transparent 70%);
 }
 
 /* ── Glassmorphism (Premium Glass) ────────────────────────────── */
@@ -109,6 +127,11 @@ body {
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border: 1px solid rgba(0, 0, 0, 0.06);
+}
+.dark .glass-pill {
+  background: rgba(18, 18, 18, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
 }
 
 /* ── 3D Scroll Reveal Animations ───────────────────────────────── */
@@ -249,6 +272,14 @@ body {
   transform: translateY(-2px);
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
 }
+.dark .btn-premium-dark {
+  background: #ffffff;
+  color: #0a0a0a;
+}
+.dark .btn-premium-dark:hover {
+  background: #e5e5e5;
+  box-shadow: 0 10px 25px rgba(255, 255, 255, 0.15);
+}
 
 .btn-premium-light {
   display: inline-flex;
@@ -272,6 +303,14 @@ body {
   background: rgba(0, 0, 0, 0.02);
   transform: translateY(-2px);
 }
+.dark .btn-premium-light {
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.18);
+}
+.dark .btn-premium-light:hover {
+  border-color: #ffffff;
+  background: rgba(255, 255, 255, 0.08);
+}
 
 /* ── Card Styling ──────────────────────────────────────────────── */
 
@@ -282,12 +321,21 @@ body {
   padding: 32px;
   transition: border-color 0.4s cubic-bezier(0.16, 1, 0.3, 1),
     box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1),
-    transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+    background-color 0.3s ease;
 }
 .feature-card-white:hover {
   border-color: #d4d4d4;
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.04);
   transform: translateY(-4px);
+}
+.dark .feature-card-white {
+  background: #141414;
+  border-color: rgba(255, 255, 255, 0.08);
+}
+.dark .feature-card-white:hover {
+  border-color: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
 }
 
 .section-padding {
@@ -369,6 +417,7 @@ body {
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
+  --grid-line: rgba(255, 255, 255, 0.08);
 }
 
 @layer base {

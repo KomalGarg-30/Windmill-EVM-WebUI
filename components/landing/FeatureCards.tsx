@@ -107,7 +107,7 @@ export default function FeatureCards() {
   return (
     <section
       id="feature-cards"
-      className="relative bg-white section-padding overflow-hidden"
+      className="relative bg-white dark:bg-[#0a0a0a] text-foreground section-padding overflow-hidden transition-colors duration-300"
     >
       {/* Subtle ambient background accents */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[80vw] h-[40vw] rounded-full opacity-[0.03] blur-3xl pointer-events-none bg-gradient-to-br from-neutral-400 to-neutral-600" />
@@ -115,10 +115,10 @@ export default function FeatureCards() {
       <div className="mx-auto max-w-5xl px-6 md:px-8">
         {/* Section Header */}
         <div className="text-center max-w-2xl mx-auto mb-16 flex flex-col items-center">
-          <h2 className="text-xs font-bold uppercase tracking-wider text-neutral-400 mb-3">
+          <h2 className="text-xs font-bold uppercase tracking-wider text-neutral-400 dark:text-neutral-500 mb-3">
             Core Capabilities
           </h2>
-          <p className="text-2xl sm:text-3xl font-extrabold text-black tracking-tight leading-tight">
+          <p className="text-2xl sm:text-3xl font-extrabold text-black dark:text-white tracking-tight leading-tight">
             Built for Performance, Designed for Scale
           </p>
         </div>
@@ -141,31 +141,31 @@ export default function FeatureCards() {
                 variants={cardVariants}
                 className={`
                   group relative rounded-2xl p-7 sm:p-8
-                  bg-white/70 backdrop-blur-md
-                  border border-black/[0.06]
-                  shadow-[0_1px_3px_rgba(0,0,0,0.04)]
+                  bg-white/70 dark:bg-neutral-900/70 backdrop-blur-md
+                  border border-black/[0.06] dark:border-white/[0.08]
+                  shadow-[0_1px_3px_rgba(0,0,0,0.04)] dark:shadow-[0_1px_3px_rgba(0,0,0,0.4)]
                   transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]
-                  hover:border-black/[0.12]
-                  hover:shadow-[0_16px_48px_rgba(0,0,0,0.06)]
+                  hover:border-black/[0.12] dark:hover:border-white/[0.16]
+                  hover:shadow-[0_16px_48px_rgba(0,0,0,0.06)] dark:hover:shadow-[0_16px_48px_rgba(0,0,0,0.4)]
                   hover:-translate-y-1
                   ${isWide ? 'md:col-span-2' : 'md:col-span-1'}
                 `}
               >
                 {/* Subtle inner gradient highlight on hover */}
-                <div className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none bg-gradient-to-br from-neutral-50/80 via-transparent to-transparent" />
+                <div className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none bg-gradient-to-br from-neutral-50/80 via-transparent to-transparent dark:from-neutral-800/40" />
 
                 <div className="relative flex flex-col gap-4">
                   {/* Icon container */}
-                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-neutral-50 border border-neutral-200/80 shadow-sm text-black transition-transform duration-300 group-hover:rotate-3 group-hover:scale-110">
+                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-neutral-50 dark:bg-neutral-800 border border-neutral-200/80 dark:border-neutral-700/80 shadow-xs text-black dark:text-white transition-transform duration-300 group-hover:rotate-3 group-hover:scale-110">
                     {feature.icon}
                   </div>
 
                   {/* Text content */}
                   <div className="flex flex-col gap-2">
-                    <h3 className="text-base font-bold text-black tracking-tight">
+                    <h3 className="text-base font-bold text-black dark:text-white tracking-tight">
                       {feature.title}
                     </h3>
-                    <p className="text-neutral-500 text-sm leading-relaxed">
+                    <p className="text-neutral-500 dark:text-neutral-400 text-sm leading-relaxed">
                       {feature.description}
                     </p>
                   </div>
