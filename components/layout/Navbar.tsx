@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { useWallet } from '@/context/WalletContext';
 import {
   Navbar as BaseNavbar,
@@ -16,6 +17,7 @@ import {
 
 export default function Navbar() {
   const { isConnected, address, network, setWalletModalOpen, disconnectWallet, switchNetwork } = useWallet();
+  const pathname = usePathname();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [networkDropdownOpen, setNetworkDropdownOpen] = useState(false);
 
@@ -29,7 +31,13 @@ export default function Navbar() {
     { name: 'Keepers', link: '/keepers' },
     { name: 'Support', link: '/support' },
     { name: 'Docs', link: '/docs' },
-  ];
+  ].map((item) => ({
+    ...item,
+    active:
+      item.link === '/'
+        ? pathname === '/'
+        : pathname === item.link || pathname?.startsWith(`${item.link}/`),
+  }));
 
   return (
 <div className="fixed top-6 left-0 right-0 z-50 flex justify-center w-full pointer-events-none">
@@ -128,7 +136,10 @@ export default function Navbar() {
                   key={item.name}
                   href={item.link}
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className="text-neutral-600 hover:text-black font-semibold text-sm transition-colors py-1"
+                  aria-current={item.active ? 'page' : undefined}
+                  className={`py-1 text-sm font-semibold transition-colors duration-200 ${
+                    item.active ? 'text-black' : 'text-neutral-600 hover:text-black'
+                  }`}
                 >
                   {item.name}
                 </Link>
