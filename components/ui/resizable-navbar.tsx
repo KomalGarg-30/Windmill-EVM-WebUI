@@ -19,7 +19,6 @@ interface NavItemsProps {
   items: {
     name: string;
     link: string;
-    active?: boolean;
   }[];
   className?: string;
   onItemClick?: () => void;
@@ -103,11 +102,7 @@ export const NavItems = ({ items, className, onItemClick }: NavItemsProps) => {
         <Link
           onMouseEnter={() => setHovered(idx)}
           onClick={onItemClick}
-          aria-current={item.active ? 'page' : undefined}
-          className={cn(
-            'relative min-w-0 shrink rounded-full px-2 py-1.5 transition-colors duration-200 xl:px-3 xl:py-2',
-            item.active ? 'bg-neutral-100/80 text-black' : 'text-neutral-700 hover:text-black'
-          )}
+          className="relative min-w-0 shrink px-2 xl:px-3 py-1.5 xl:py-2 text-neutral-700 hover:text-black transition-colors duration-200"
           key={`link-${idx}`}
           href={item.link}
         >
