@@ -42,11 +42,11 @@ export default function Navbar() {
 
   return (
     <div className="fixed top-6 left-0 right-0 z-50 flex justify-center w-full pointer-events-none">
-      <BaseNavbar className="w-full max-w-6xl px-4 pointer-events-auto">
+      <BaseNavbar className="w-full max-w-7xl px-4 pointer-events-auto">
         {/* Desktop Navigation using resizable NavBody */}
         <NavBody>
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2 group cursor-pointer mr-6 shrink-0">
+          <Link href="/" className="relative z-20 flex items-center gap-2 group cursor-pointer shrink-0 justify-self-start">
             <img src="/windmill-logo.svg" alt="Windmill" width={36} height={36} className="shrink-0" />
             <span className="font-sans text-base font-bold tracking-tight text-black dark:text-white">
               WINDMILL
@@ -57,7 +57,7 @@ export default function Navbar() {
           <NavItems items={navItems} />
 
           {/* Wallet Actions & Theme Switcher */}
-          <div className="relative z-30 flex items-center gap-2.5 shrink-0 ml-auto pointer-events-auto">
+          <div className="relative z-30 flex items-center gap-2.5 shrink-0 justify-self-end pointer-events-auto">
             {/* Theme Toggle Button */}
             <ThemeToggle />
 

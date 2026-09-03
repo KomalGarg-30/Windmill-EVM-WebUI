@@ -76,10 +76,10 @@ export const NavBody = ({ children, className, visible }: NavBodyProps) => {
         transition: 'width 0.4s cubic-bezier(0.16, 1, 0.3, 1), transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease',
       }}
       className={cn(
-        'relative z-[60] mx-auto hidden w-full flex-row items-center justify-between gap-5 rounded-full px-8 py-4 xl:flex',
+        'relative z-[60] mx-auto hidden w-full grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-5 rounded-full px-8 py-4 xl:grid',
         visible
-          ? 'w-[92%] max-w-6xl glass-pill shadow-lg translate-y-4'
-          : 'w-full max-w-6xl bg-transparent border-transparent translate-y-0',
+          ? 'w-[92%] max-w-7xl glass-pill shadow-lg translate-y-4'
+          : 'w-full max-w-7xl bg-transparent border-transparent translate-y-0',
         className
       )}
     >
@@ -95,7 +95,7 @@ export const NavItems = ({ items, className, onItemClick }: NavItemsProps) => {
     <div
       onMouseLeave={() => setHovered(null)}
       className={cn(
-        'hidden min-w-0 flex-1 flex-row items-center justify-center gap-1.5 xl:gap-2.5 text-xs xl:text-sm font-semibold text-neutral-700 dark:text-neutral-300 transition duration-200 xl:flex',
+        'hidden w-fit min-w-0 flex-none flex-row items-center justify-center gap-1 xl:gap-3 text-xs xl:text-sm font-semibold text-neutral-700 dark:text-neutral-300 transition duration-200 xl:flex',
         className
       )}
     >
@@ -105,7 +105,7 @@ export const NavItems = ({ items, className, onItemClick }: NavItemsProps) => {
           onClick={onItemClick}
           aria-current={item.active ? 'page' : undefined}
           className={cn(
-            'relative min-w-0 shrink rounded-full px-2 py-1.5 transition-colors duration-200 xl:px-3 xl:py-2 select-none',
+            'relative min-w-max shrink-0 rounded-full px-1 py-1.5 transition-colors duration-200 xl:px-2 xl:py-2 select-none',
             item.active
               ? 'bg-neutral-100/80 text-black dark:bg-white/10 dark:text-white font-bold'
               : 'text-neutral-700 hover:text-black dark:text-neutral-300 dark:hover:text-white'
