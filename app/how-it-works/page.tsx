@@ -3,7 +3,7 @@ import WalletModal from '@/components/wallet/WalletModal';
 
 export default function HowItWorksPage() {
   return (
-    <main className="w-full min-h-screen bg-white text-black pt-24">
+    <main className="w-full min-h-screen bg-background text-foreground pt-24 transition-colors duration-300">
       {/* Wallet connection modal */}
       <WalletModal />
       

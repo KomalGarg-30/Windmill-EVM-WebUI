@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 
 export default function KYAPage() {
   return (
-    <main className="min-h-screen bg-neutral-950 text-neutral-100 py-20 px-6 md:px-12">
+    <main className="min-h-screen bg-neutral-950 text-neutral-100 pt-28 pb-20 px-6 md:px-12">
       <div className="max-w-4xl mx-auto space-y-12">
         {/* Header */}
         <div className="space-y-4 border-b border-neutral-800 pb-8">

@@ -95,7 +95,7 @@ export const NavItems = ({ items, className, onItemClick }: NavItemsProps) => {
     <div
       onMouseLeave={() => setHovered(null)}
       className={cn(
-        'hidden min-w-0 flex-1 flex-row items-center justify-center space-x-0.5 xl:space-x-1 text-[11px] xl:text-xs font-semibold text-neutral-700 transition duration-200 xl:flex',
+        'hidden min-w-0 shrink flex-row items-center justify-center space-x-0.5 xl:space-x-1 text-[11px] xl:text-xs font-semibold text-neutral-700 dark:text-neutral-300 transition duration-200 xl:flex',
         className
       )}
     >
@@ -105,14 +105,16 @@ export const NavItems = ({ items, className, onItemClick }: NavItemsProps) => {
           onClick={onItemClick}
           aria-current={item.active ? 'page' : undefined}
           className={cn(
-            'relative min-w-0 shrink rounded-full px-2 py-1.5 transition-colors duration-200 xl:px-3 xl:py-2',
-            item.active ? 'bg-neutral-100/80 text-black' : 'text-neutral-700 hover:text-black'
+            'relative min-w-0 shrink rounded-full px-2 py-1.5 transition-colors duration-200 xl:px-3 xl:py-2 select-none',
+            item.active
+              ? 'bg-neutral-100/80 text-black dark:bg-white/10 dark:text-white font-bold'
+              : 'text-neutral-700 hover:text-black dark:text-neutral-300 dark:hover:text-white'
           )}
           key={`link-${idx}`}
           href={item.link}
         >
           {hovered === idx && (
-            <div className="absolute inset-0 h-full w-full rounded-full bg-neutral-100/70 z-0 animate-fade-in" />
+            <div className="absolute inset-0 h-full w-full rounded-full bg-neutral-100/70 dark:bg-white/10 z-0 animate-fade-in pointer-events-none" />
           )}
           <span className="relative z-10 uppercase tracking-wider text-[10px] font-bold whitespace-nowrap">{item.name}</span>
         </Link>
@@ -154,7 +156,7 @@ export const MobileNavMenu = ({ children, className, isOpen }: MobileNavMenuProp
   return (
     <div
       className={cn(
-        'absolute inset-x-0 top-16 z-50 flex w-full flex-col items-start justify-start gap-4 rounded-3xl bg-white border border-black/5 p-6 shadow-xl animate-dropdown-enter',
+        'absolute inset-x-0 top-16 z-50 flex w-full flex-col items-start justify-start gap-4 rounded-3xl bg-white dark:bg-neutral-900 border border-black/5 dark:border-white/10 p-6 shadow-xl animate-dropdown-enter text-foreground',
         className
       )}
     >
@@ -165,13 +167,13 @@ export const MobileNavMenu = ({ children, className, isOpen }: MobileNavMenuProp
 
 export const MobileNavToggle = ({ isOpen, onClick }: { isOpen: boolean; onClick: () => void }) => {
   return (
-    <button onClick={onClick} className="p-1 cursor-pointer">
+    <button onClick={onClick} className="p-1 cursor-pointer text-black dark:text-white" aria-label="Toggle navigation menu">
       {isOpen ? (
-        <svg className="w-5 h-5 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg className="w-5 h-5 text-current" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
         </svg>
       ) : (
-        <svg className="w-5 h-5 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg className="w-5 h-5 text-current" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16m-7 6h7" />
         </svg>
       )}
@@ -181,9 +183,9 @@ export const MobileNavToggle = ({ isOpen, onClick }: { isOpen: boolean; onClick:
 
 export const NavbarLogo = () => {
   return (
-    <Link href="/" className="relative z-20 flex items-center space-x-2 px-2 py-1 text-sm font-bold text-black">
-      <div className="flex h-6 w-6 items-center justify-center rounded-full bg-black text-white text-xs">W</div>
-      <span className="font-semibold text-black">WINDMILL</span>
+    <Link href="/" className="relative z-20 flex items-center space-x-2 px-2 py-1 text-sm font-bold text-black dark:text-white">
+      <div className="flex h-6 w-6 items-center justify-center rounded-full bg-black text-white dark:bg-white dark:text-black text-xs">W</div>
+      <span className="font-semibold text-black dark:text-white">WINDMILL</span>
     </Link>
   );
 };
@@ -206,10 +208,10 @@ export const NavbarButton = ({
     'px-4 py-2 rounded-full text-xs font-bold relative cursor-pointer hover:-translate-y-0.5 transition duration-200 inline-block text-center select-none';
 
   const variantStyles = {
-    primary: 'bg-white text-black border border-black/5 shadow-sm hover:bg-neutral-50',
-    secondary: 'bg-transparent text-neutral-600 hover:text-black border border-transparent',
-    dark: 'bg-black text-white hover:bg-neutral-800 border border-transparent shadow-sm',
-    gradient: 'bg-gradient-to-b from-neutral-800 to-black text-white shadow-sm border border-transparent',
+    primary: 'bg-white text-black border border-black/5 shadow-xs hover:bg-neutral-50 dark:bg-neutral-900 dark:text-white dark:border-white/10 dark:hover:bg-neutral-800',
+    secondary: 'bg-transparent text-neutral-600 hover:text-black dark:text-neutral-400 dark:hover:text-white border border-transparent',
+    dark: 'bg-black text-white hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-neutral-200 border border-transparent shadow-xs',
+    gradient: 'bg-gradient-to-b from-neutral-800 to-black text-white dark:from-neutral-100 dark:to-neutral-300 dark:text-black shadow-xs border border-transparent',
   };
 
   const TagElement = Tag as React.ComponentType<{

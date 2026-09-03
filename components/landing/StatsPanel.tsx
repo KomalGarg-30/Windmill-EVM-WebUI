@@ -90,7 +90,7 @@ export default function StatsPanel() {
           transform: 'perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)',
           transition: 'transform 0.1s ease-out, box-shadow 0.2s ease',
         }}
-        className="w-full max-w-4xl bg-white border border-neutral-100 rounded-3xl p-6 sm:p-8 shadow-xl flex flex-col sm:flex-row items-center justify-between gap-6 sm:gap-4 select-none hover:shadow-2xl cursor-default"
+        className="w-full max-w-4xl bg-white dark:bg-neutral-900 border border-neutral-100 dark:border-neutral-800 rounded-3xl p-6 sm:p-8 shadow-xl dark:shadow-2xl flex flex-col sm:flex-row items-center justify-between gap-6 sm:gap-4 select-none hover:shadow-2xl cursor-default transition-colors duration-300"
       >
         {STATS.map((stat, idx) => (
           <React.Fragment key={stat.label}>
@@ -99,16 +99,16 @@ export default function StatsPanel() {
                 {renderStatIcon(stat.icon || '')}
               </div>
               <div>
-                <span className="text-xl font-extrabold text-neutral-900 font-sans tracking-tight block">
+                <span className="text-xl font-extrabold text-neutral-900 dark:text-white font-sans tracking-tight block">
                   {stat.value}
                 </span>
-                <span className="text-xs font-semibold text-neutral-400">
+                <span className="text-xs font-semibold text-neutral-400 dark:text-neutral-500">
                   {stat.label}
                 </span>
               </div>
             </div>
             {idx < STATS.length - 1 && (
-              <div className="hidden sm:block w-[1px] h-10 bg-neutral-100" />
+              <div className="hidden sm:block w-[1px] h-10 bg-neutral-100 dark:bg-neutral-800" />
             )}
           </React.Fragment>
         ))}
@@ -116,7 +116,7 @@ export default function StatsPanel() {
 
       {/* WHY WINDMILL centered label */}
       <div className="flex flex-col items-center gap-1 mt-4">
-        <span className="text-[10px] font-extrabold tracking-[0.2em] text-neutral-400 uppercase font-sans">
+        <span className="text-[10px] font-extrabold tracking-[0.2em] text-neutral-400 dark:text-neutral-500 uppercase font-sans">
           WHY WINDMILL?
         </span>
       </div>

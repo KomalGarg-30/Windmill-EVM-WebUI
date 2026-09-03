@@ -3,17 +3,17 @@ import { Lock, Zap, Link2, User, FileText, Bot, ArrowRight } from 'lucide-react'
 
 export default function AboutPage() {
   return (
-    <main className="w-full min-h-screen bg-white text-black pt-24">
+    <main className="w-full min-h-screen bg-background text-foreground pt-24 transition-colors duration-300">
       <WalletModal />
 
       <div className="max-w-4xl mx-auto px-6 py-16 flex flex-col gap-12">
         {/* Header */}
         <div className="text-center flex flex-col items-center">
-          <span className="text-[11px] font-bold text-neutral-400 uppercase tracking-widest">About Us</span>
-          <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-black mt-2">
+          <span className="text-[11px] font-bold text-neutral-400 dark:text-neutral-500 uppercase tracking-widest">About Us</span>
+          <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-black dark:text-white mt-2">
             Stability Nexus Protocol
           </h1>
-          <p className="text-neutral-500 text-sm mt-3 max-w-xl leading-relaxed">
+          <p className="text-neutral-500 dark:text-neutral-400 text-sm mt-3 max-w-xl leading-relaxed">
             A decentralized research and deployment collective dedicated to building mathematically proven,
             resilient, and non-custodial financial infrastructure.
           </p>
@@ -22,26 +22,26 @@ export default function AboutPage() {
         {/* Mission */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <div className="flex flex-col gap-4">
-            <h2 className="text-lg font-bold text-black">Our Mission</h2>
-            <p className="text-sm text-neutral-500 leading-relaxed">
+            <h2 className="text-lg font-bold text-black dark:text-white">Our Mission</h2>
+            <p className="text-sm text-neutral-500 dark:text-neutral-400 leading-relaxed">
               Our core mission with the Windmill Exchange is to build a zero-maintenance matching pipeline that
               runs autonomously. Through sophisticated time-sloped order curves and robust O(N log N) sweep logic,
               we bridge the gap between traditional orderbooks and automated market makers (AMMs).
             </p>
-            <p className="text-sm text-neutral-500 leading-relaxed">
+            <p className="text-sm text-neutral-500 dark:text-neutral-400 leading-relaxed">
               We believe in fully on-chain, transparent, and verifiable financial infrastructure. Every order,
               every match, and every fee is settled atomically on the blockchain — no off-chain components,
               no trusted intermediaries.
             </p>
           </div>
           <div className="flex flex-col gap-4">
-            <h2 className="text-lg font-bold text-black">Why Windmill?</h2>
-            <p className="text-sm text-neutral-500 leading-relaxed">
+            <h2 className="text-lg font-bold text-black dark:text-white">Why Windmill?</h2>
+            <p className="text-sm text-neutral-500 dark:text-neutral-400 leading-relaxed">
               Traditional DEX orderbooks require active market makers. AMMs suffer from impermanent loss.
               Windmill&apos;s dynamic pricing curves provide a third path: orders that autonomously adjust
               their prices over time, creating natural market convergence without requiring active participation.
             </p>
-            <p className="text-sm text-neutral-500 leading-relaxed">
+            <p className="text-sm text-neutral-500 dark:text-neutral-400 leading-relaxed">
               The keeper network ensures settlement happens automatically — anyone can run a keeper node
               to earn matching fees while contributing to protocol decentralization.
             </p>
@@ -50,36 +50,36 @@ export default function AboutPage() {
 
         {/* Core Pillars */}
         <div>
-          <h2 className="text-xs font-bold uppercase tracking-wider text-neutral-400 mb-6 text-center">
+          <h2 className="text-xs font-bold uppercase tracking-wider text-neutral-400 dark:text-neutral-500 mb-6 text-center">
             Protocol Pillars
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-            <div className="rounded-2xl border border-neutral-100 bg-neutral-50/30 p-6 hover:-translate-y-1 hover:shadow-md hover:border-neutral-200 transition-all duration-300 flex flex-col items-start">
-              <div className="h-10 w-10 rounded-xl bg-black text-white flex items-center justify-center mb-4">
+            <div className="rounded-2xl border border-neutral-100 dark:border-neutral-800 bg-neutral-50/30 dark:bg-neutral-900/50 p-6 hover:-translate-y-1 hover:shadow-md hover:border-neutral-200 dark:hover:border-neutral-700 transition-all duration-300 flex flex-col items-start">
+              <div className="h-10 w-10 rounded-xl bg-black dark:bg-white text-white dark:text-black flex items-center justify-center mb-4">
                 <Lock className="w-5 h-5" />
               </div>
-              <h3 className="text-base font-bold text-black mb-2">Resilient Infrastructure</h3>
-              <p className="text-xs text-neutral-500 leading-relaxed">
+              <h3 className="text-base font-bold text-black dark:text-white mb-2">Resilient Infrastructure</h3>
+              <p className="text-xs text-neutral-500 dark:text-neutral-400 leading-relaxed">
                 We verify properties formally, ensuring smart contracts meet safety constraints before deploying them
                 to production networks. ReentrancyGuard, CEI pattern, and formal verification.
               </p>
             </div>
-            <div className="rounded-2xl border border-neutral-100 bg-neutral-50/30 p-6 hover:-translate-y-1 hover:shadow-md hover:border-neutral-200 transition-all duration-300 flex flex-col items-start">
-              <div className="h-10 w-10 rounded-xl bg-black text-white flex items-center justify-center mb-4">
+            <div className="rounded-2xl border border-neutral-100 dark:border-neutral-800 bg-neutral-50/30 dark:bg-neutral-900/50 p-6 hover:-translate-y-1 hover:shadow-md hover:border-neutral-200 dark:hover:border-neutral-700 transition-all duration-300 flex flex-col items-start">
+              <div className="h-10 w-10 rounded-xl bg-black dark:bg-white text-white dark:text-black flex items-center justify-center mb-4">
                 <Zap className="w-5 h-5" />
               </div>
-              <h3 className="text-base font-bold text-black mb-2">Keeper Ecosystem</h3>
-              <p className="text-xs text-neutral-500 leading-relaxed">
+              <h3 className="text-base font-bold text-black dark:text-white mb-2">Keeper Ecosystem</h3>
+              <p className="text-xs text-neutral-500 dark:text-neutral-400 leading-relaxed">
                 Our keeper node binaries can be operated by anyone, promoting true decentralization and open
                 settlement operations. Keepers earn 0.1% per match to offset gas costs.
               </p>
             </div>
-            <div className="rounded-2xl border border-neutral-100 bg-neutral-50/30 p-6 hover:-translate-y-1 hover:shadow-md hover:border-neutral-200 transition-all duration-300 flex flex-col items-start">
-              <div className="h-10 w-10 rounded-xl bg-black text-white flex items-center justify-center mb-4">
+            <div className="rounded-2xl border border-neutral-100 dark:border-neutral-800 bg-neutral-50/30 dark:bg-neutral-900/50 p-6 hover:-translate-y-1 hover:shadow-md hover:border-neutral-200 dark:hover:border-neutral-700 transition-all duration-300 flex flex-col items-start">
+              <div className="h-10 w-10 rounded-xl bg-black dark:bg-white text-white dark:text-black flex items-center justify-center mb-4">
                 <Link2 className="w-5 h-5" />
               </div>
-              <h3 className="text-base font-bold text-black mb-2">Multi-Chain Native</h3>
-              <p className="text-xs text-neutral-500 leading-relaxed">
+              <h3 className="text-base font-bold text-black dark:text-white mb-2">Multi-Chain Native</h3>
+              <p className="text-xs text-neutral-500 dark:text-neutral-400 leading-relaxed">
                 Deploy across Ethereum, Ethereum Classic, Polygon, BSC, Base, and more. Same contract,
                 same keeper software, same user experience on every EVM chain.
               </p>
@@ -88,8 +88,8 @@ export default function AboutPage() {
         </div>
 
         {/* Protocol Architecture */}
-        <div className="rounded-2xl border border-neutral-100 p-6 bg-neutral-50/30">
-          <h2 className="text-lg font-bold text-black mb-4">Protocol Architecture</h2>
+        <div className="rounded-2xl border border-neutral-100 dark:border-neutral-800 p-6 bg-neutral-50/30 dark:bg-neutral-900/50">
+          <h2 className="text-lg font-bold text-black dark:text-white mb-4">Protocol Architecture</h2>
           <div className="flex flex-col sm:flex-row items-center justify-between gap-6 text-center">
             {[
               { icon: User, title: 'Users', desc: 'Create orders with dynamic pricing curves via the WebUI' },
@@ -101,14 +101,14 @@ export default function AboutPage() {
               const Icon = item.icon;
               return item.title && Icon ? (
                 <div key={idx} className="flex flex-col items-center gap-2">
-                  <div className="h-12 w-12 rounded-full bg-black text-white flex items-center justify-center">
+                  <div className="h-12 w-12 rounded-full bg-black dark:bg-white text-white dark:text-black flex items-center justify-center">
                     <Icon className="w-5 h-5" />
                   </div>
-                  <span className="text-xs font-bold text-black">{item.title}</span>
-                  <span className="text-[9px] text-neutral-400 max-w-[140px]">{item.desc}</span>
+                  <span className="text-xs font-bold text-black dark:text-white">{item.title}</span>
+                  <span className="text-[9px] text-neutral-400 dark:text-neutral-500 max-w-[140px]">{item.desc}</span>
                 </div>
               ) : (
-                <ArrowRight key={idx} className="text-neutral-300 w-5 h-5 hidden sm:block" />
+                <ArrowRight key={idx} className="text-neutral-300 dark:text-neutral-700 w-5 h-5 hidden sm:block" />
               );
             })}
           </div>
@@ -116,8 +116,8 @@ export default function AboutPage() {
 
         {/* Roadmap */}
         <div>
-          <h2 className="text-lg font-bold text-black mb-6 text-center">Roadmap</h2>
-          <div className="relative border-l border-black/10 pl-8 ml-4 flex flex-col gap-8">
+          <h2 className="text-lg font-bold text-black dark:text-white mb-6 text-center">Roadmap</h2>
+          <div className="relative border-l border-black/10 dark:border-white/10 pl-8 ml-4 flex flex-col gap-8">
             {[
               { phase: 'Phase 1', title: 'Core Protocol', status: 'Complete', items: ['WindmillExchange smart contract', 'Order lifecycle (create, cancel, match)', 'Foundry test suite', 'Multi-chain deployment scripts'] },
               { phase: 'Phase 2', title: 'Keeper Network', status: 'Complete', items: ['Node.js keeper service', 'Two-pointer sweep algorithm', 'Dry-run and safety controls', 'Windmill strategy implementation'] },
@@ -125,24 +125,24 @@ export default function AboutPage() {
               { phase: 'Phase 4', title: 'Scale & Optimize', status: 'Upcoming', items: ['Batch matching optimization', 'L2 gas optimization', 'Advanced order types', 'Governance framework'] },
             ].map((item) => (
               <div key={item.phase} className="relative">
-                <div className="absolute -left-[37px] top-1 h-5 w-5 rounded-full bg-white border-2 border-black/15 flex items-center justify-center">
-                  <div className={`h-2 w-2 rounded-full ${item.status === 'Complete' ? 'bg-black' : 'bg-neutral-300'}`} />
+                <div className="absolute -left-[37px] top-1 h-5 w-5 rounded-full bg-white dark:bg-neutral-900 border-2 border-black/15 dark:border-white/20 flex items-center justify-center">
+                  <div className={`h-2 w-2 rounded-full ${item.status === 'Complete' ? 'bg-black dark:bg-white' : 'bg-neutral-300 dark:bg-neutral-600'}`} />
                 </div>
                 <div className="flex items-center gap-2 mb-2">
-                  <span className="text-[10px] font-mono font-bold text-neutral-400 uppercase tracking-wider">
+                  <span className="text-[10px] font-mono font-bold text-neutral-400 dark:text-neutral-500 uppercase tracking-wider">
                     {item.phase}
                   </span>
                   <span className={`text-[9px] px-2 py-0.5 rounded-full font-bold ${
-                    item.status === 'Complete' ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'
+                    item.status === 'Complete' ? 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400' : 'bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-400'
                   }`}>
                     {item.status}
                   </span>
                 </div>
-                <h3 className="text-base font-bold text-black">{item.title}</h3>
+                <h3 className="text-base font-bold text-black dark:text-white">{item.title}</h3>
                 <ul className="flex flex-col gap-1 mt-2">
                   {item.items.map((li) => (
-                    <li key={li} className="text-xs text-neutral-500 flex items-center gap-2">
-                      <span className="h-1 w-1 rounded-full bg-neutral-300 shrink-0" />
+                    <li key={li} className="text-xs text-neutral-500 dark:text-neutral-400 flex items-center gap-2">
+                      <span className="h-1 w-1 rounded-full bg-neutral-300 dark:bg-neutral-600 shrink-0" />
                       {li}
                     </li>
                   ))}
@@ -154,8 +154,8 @@ export default function AboutPage() {
 
         {/* Community CTA */}
         <div className="text-center py-8 flex flex-col items-center gap-4">
-          <h2 className="text-xl font-extrabold text-black">Join the Community</h2>
-          <p className="text-sm text-neutral-500 max-w-md">
+          <h2 className="text-xl font-extrabold text-black dark:text-white">Join the Community</h2>
+          <p className="text-sm text-neutral-500 dark:text-neutral-400 max-w-md">
             Connect with the Stability Nexus team and other contributors building the future of decentralized exchange infrastructure.
           </p>
           <div className="flex flex-wrap gap-3 justify-center">
