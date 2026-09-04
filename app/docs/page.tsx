@@ -19,13 +19,13 @@ export default function DocsPage() {
   const containerRef = useScrollRevealChildren<HTMLDivElement>({ threshold: 0.05 });
 
   return (
-    <main className="w-full min-h-screen bg-white text-black pt-24">
+    <main className="w-full min-h-screen bg-background text-foreground pt-24 transition-colors duration-300">
       <WalletModal />
 
       <div ref={containerRef} className="max-w-5xl mx-auto px-6 py-16 flex flex-col lg:flex-row gap-10">
         {/* Sidebar Navigation */}
         <nav className="lg:w-48 shrink-0 lg:sticky lg:top-28 lg:self-start">
-          <h2 className="text-[11px] font-bold text-neutral-400 uppercase tracking-widest mb-4">Documentation</h2>
+          <h2 className="text-[11px] font-bold text-neutral-400 dark:text-neutral-500 uppercase tracking-widest mb-4">Documentation</h2>
           <div className="flex flex-row lg:flex-col gap-1 overflow-x-auto lg:overflow-visible pb-2 lg:pb-0">
             {DOCS_SECTIONS.map((section) => (
               <button
@@ -33,8 +33,8 @@ export default function DocsPage() {
                 onClick={() => setActiveSection(section.id)}
                 className={`text-left text-xs font-semibold px-3 py-2 rounded-xl transition-all whitespace-nowrap cursor-pointer ${
                   activeSection === section.id
-                    ? 'bg-black text-white'
-                    : 'text-neutral-500 hover:text-black hover:bg-neutral-50'
+                    ? 'bg-black text-white dark:bg-white dark:text-black font-bold shadow-xs'
+                    : 'text-neutral-500 dark:text-neutral-400 hover:text-black dark:hover:text-white hover:bg-neutral-50 dark:hover:bg-neutral-800'
                 }`}
               >
                 {section.label}
@@ -44,11 +44,11 @@ export default function DocsPage() {
         </nav>
 
         {/* Content */}
-        <div className="flex-1 flex flex-col gap-8 text-sm text-neutral-600 leading-relaxed min-w-0">
+        <div className="flex-1 flex flex-col gap-8 text-sm text-neutral-600 dark:text-neutral-300 leading-relaxed min-w-0">
           {activeSection === 'overview' && (
             <div data-reveal className="reveal-fade-up flex flex-col gap-6">
               <div>
-                <h1 className="text-3xl font-extrabold tracking-tight text-black mb-4">Windmill Exchange Protocol</h1>
+                <h1 className="text-3xl font-extrabold tracking-tight text-black dark:text-white mb-4">Windmill Exchange Protocol</h1>
                 <p>
                   Windmill Exchange is a fully on-chain order matching engine for EVM-compatible blockchains. It implements
                   configurable dynamic pricing curves with autonomous keeper-based settlement.
@@ -56,15 +56,15 @@ export default function DocsPage() {
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="border border-neutral-100 rounded-2xl p-5 bg-neutral-50/30">
-                  <h3 className="text-sm font-bold text-black mb-2">Core Contract</h3>
+                <div className="border border-neutral-100 dark:border-neutral-800 rounded-2xl p-5 bg-neutral-50/30 dark:bg-neutral-900/50">
+                  <h3 className="text-sm font-bold text-black dark:text-white mb-2">Core Contract</h3>
                   <p className="text-xs text-neutral-500">
                     <code className="bg-neutral-100 px-1.5 py-0.5 rounded text-[11px]">WindmillExchange.sol</code> — Handles
                     order creation, cancellation, matching, and settlement with ReentrancyGuard protection.
                   </p>
                 </div>
-                <div className="border border-neutral-100 rounded-2xl p-5 bg-neutral-50/30">
-                  <h3 className="text-sm font-bold text-black mb-2">Keeper Network</h3>
+                <div className="border border-neutral-100 dark:border-neutral-800 rounded-2xl p-5 bg-neutral-50/30 dark:bg-neutral-900/50">
+                  <h3 className="text-sm font-bold text-black dark:text-white mb-2">Keeper Network</h3>
                   <p className="text-xs text-neutral-500">
                     Node.js service using ethers.js that continuously scans for matchable order pairs and executes
                     settlement transactions to earn 0.1% fees.
@@ -72,8 +72,8 @@ export default function DocsPage() {
                 </div>
               </div>
 
-              <div className="border border-neutral-100 rounded-2xl p-5 bg-neutral-50/30">
-                <h3 className="text-sm font-bold text-black mb-2">Architecture</h3>
+              <div className="border border-neutral-100 dark:border-neutral-800 rounded-2xl p-5 bg-neutral-50/30 dark:bg-neutral-900/50">
+                <h3 className="text-sm font-bold text-black dark:text-white mb-2">Architecture</h3>
                 <div className="font-mono text-[11px] text-neutral-600 whitespace-pre overflow-x-auto">
 {`src/
 ├── core/
@@ -97,40 +97,40 @@ export default function DocsPage() {
 
           {activeSection === 'price-curves' && (
             <div data-reveal className="reveal-fade-up flex flex-col gap-6">
-              <h2 className="text-2xl font-extrabold text-black">Price Curve Mechanics</h2>
+              <h2 className="text-2xl font-extrabold text-black dark:text-white">Price Curve Mechanics</h2>
               <p>
                 Each order is characterized by a starting price and a linear slope. Prices are represented in{' '}
                 <strong>RAY</strong> (1e27) units for high-precision arithmetic:
               </p>
-              <div className="bg-neutral-50 border border-neutral-100 p-5 rounded-xl font-mono text-sm text-black">
+              <div className="bg-neutral-50 dark:bg-neutral-800/80 border border-neutral-100 dark:border-neutral-800 p-5 rounded-xl font-mono text-sm text-black dark:text-white">
                 price(t) = startPrice + slope × (t − createdAt)
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="border border-neutral-100 rounded-xl p-4">
-                  <h4 className="text-sm font-bold text-black mb-1">Buy Orders (Negative Slope)</h4>
+                <div className="border border-neutral-100 dark:border-neutral-800 rounded-xl p-4">
+                  <h4 className="text-sm font-bold text-black dark:text-white mb-1">Buy Orders (Negative Slope)</h4>
                   <p className="text-xs text-neutral-500">
                     Buyer&apos;s willingness to pay <em>decreases</em> over time. The price slides downward along the curve
                     until it meets a compatible sell order or expires.
                   </p>
                 </div>
-                <div className="border border-neutral-100 rounded-xl p-4">
-                  <h4 className="text-sm font-bold text-black mb-1">Sell Orders (Positive Slope)</h4>
+                <div className="border border-neutral-100 dark:border-neutral-800 rounded-xl p-4">
+                  <h4 className="text-sm font-bold text-black dark:text-white mb-1">Sell Orders (Positive Slope)</h4>
                   <p className="text-xs text-neutral-500">
                     Seller&apos;s asking price <em>increases</em> over time. This creates natural price convergence where
                     buy and sell curves eventually intersect.
                   </p>
                 </div>
               </div>
-              <div className="border border-neutral-100 rounded-xl p-4">
-                <h4 className="text-sm font-bold text-black mb-2">Price Bounds</h4>
+              <div className="border border-neutral-100 dark:border-neutral-800 rounded-xl p-4">
+                <h4 className="text-sm font-bold text-black dark:text-white mb-2">Price Bounds</h4>
                 <ul className="text-xs text-neutral-500 flex flex-col gap-1.5">
                   <li>• <code className="bg-neutral-100 px-1 py-0.5 rounded">minPrice</code> — Floor price. The curve never goes below this value (0 = no floor).</li>
                   <li>• <code className="bg-neutral-100 px-1 py-0.5 rounded">maxPrice</code> — Ceiling price. The curve never exceeds this value (0 = no ceiling).</li>
                   <li>• <code className="bg-neutral-100 px-1 py-0.5 rounded">expiry</code> — Unix timestamp after which the order cannot be matched (0 = no expiry).</li>
                 </ul>
               </div>
-              <div className="border border-neutral-100 rounded-xl p-4">
-                <h4 className="text-sm font-bold text-black mb-2">Settlement Price</h4>
+              <div className="border border-neutral-100 dark:border-neutral-800 rounded-xl p-4">
+                <h4 className="text-sm font-bold text-black dark:text-white mb-2">Settlement Price</h4>
                 <p className="text-xs text-neutral-500">
                   When two orders match, the settlement price is computed as the midpoint of the buy and sell prices at the
                   current timestamp. The executed quantity is determined by the smaller of: (1) what the buyer can afford, and
@@ -142,13 +142,13 @@ export default function DocsPage() {
 
           {activeSection === 'api' && (
             <div data-reveal className="reveal-fade-up flex flex-col gap-6">
-              <h2 className="text-2xl font-extrabold text-black">API Reference</h2>
+              <h2 className="text-2xl font-extrabold text-black dark:text-white">API Reference</h2>
               <p className="text-neutral-500">Complete public interface of the WindmillExchange smart contract.</p>
 
               {/* createOrder */}
-              <div className="border border-neutral-100 rounded-2xl p-5">
-                <h3 className="text-sm font-bold text-black font-mono mb-2">createOrder()</h3>
-                <div className="bg-neutral-50 rounded-xl p-3 font-mono text-[11px] text-black overflow-x-auto mb-3">
+              <div className="border border-neutral-100 dark:border-neutral-800 rounded-2xl p-5">
+                <h3 className="text-sm font-bold text-black dark:text-white font-mono mb-2">createOrder()</h3>
+                <div className="bg-neutral-50 dark:bg-neutral-800/80 rounded-xl p-3 font-mono text-[11px] text-black dark:text-white overflow-x-auto mb-3">
                   <pre className="whitespace-pre">{`function createOrder(
   address tokenIn,    // Token deposited by maker
   address tokenOut,   // Token desired by maker
@@ -168,9 +168,9 @@ export default function DocsPage() {
               </div>
 
               {/* cancelOrder */}
-              <div className="border border-neutral-100 rounded-2xl p-5">
-                <h3 className="text-sm font-bold text-black font-mono mb-2">cancelOrder()</h3>
-                <div className="bg-neutral-50 rounded-xl p-3 font-mono text-[11px] text-black overflow-x-auto mb-3">
+              <div className="border border-neutral-100 dark:border-neutral-800 rounded-2xl p-5">
+                <h3 className="text-sm font-bold text-black dark:text-white font-mono mb-2">cancelOrder()</h3>
+                <div className="bg-neutral-50 dark:bg-neutral-800/80 rounded-xl p-3 font-mono text-[11px] text-black dark:text-white overflow-x-auto mb-3">
                   <pre className="whitespace-pre">{`function cancelOrder(uint256 orderId) external`}</pre>
                 </div>
                 <p className="text-xs text-neutral-500">
@@ -179,9 +179,9 @@ export default function DocsPage() {
               </div>
 
               {/* matchOrders */}
-              <div className="border border-neutral-100 rounded-2xl p-5">
-                <h3 className="text-sm font-bold text-black font-mono mb-2">matchOrders()</h3>
-                <div className="bg-neutral-50 rounded-xl p-3 font-mono text-[11px] text-black overflow-x-auto mb-3">
+              <div className="border border-neutral-100 dark:border-neutral-800 rounded-2xl p-5">
+                <h3 className="text-sm font-bold text-black dark:text-white font-mono mb-2">matchOrders()</h3>
+                <div className="bg-neutral-50 dark:bg-neutral-800/80 rounded-xl p-3 font-mono text-[11px] text-black dark:text-white overflow-x-auto mb-3">
                   <pre className="whitespace-pre">{`function matchOrders(
   uint256 buyOrderId,
   uint256 sellOrderId,
@@ -195,9 +195,9 @@ export default function DocsPage() {
               </div>
 
               {/* matchOrdersBatch */}
-              <div className="border border-neutral-100 rounded-2xl p-5">
-                <h3 className="text-sm font-bold text-black font-mono mb-2">matchOrdersBatch()</h3>
-                <div className="bg-neutral-50 rounded-xl p-3 font-mono text-[11px] text-black overflow-x-auto mb-3">
+              <div className="border border-neutral-100 dark:border-neutral-800 rounded-2xl p-5">
+                <h3 className="text-sm font-bold text-black dark:text-white font-mono mb-2">matchOrdersBatch()</h3>
+                <div className="bg-neutral-50 dark:bg-neutral-800/80 rounded-xl p-3 font-mono text-[11px] text-black dark:text-white overflow-x-auto mb-3">
                   <pre className="whitespace-pre">{`function matchOrdersBatch(
   uint256 orderId,
   uint256[] calldata counterOrderIds,
@@ -210,23 +210,23 @@ export default function DocsPage() {
               </div>
 
               {/* View functions */}
-              <div className="border border-neutral-100 rounded-2xl p-5">
-                <h3 className="text-sm font-bold text-black mb-2">View Functions</h3>
+              <div className="border border-neutral-100 dark:border-neutral-800 rounded-2xl p-5">
+                <h3 className="text-sm font-bold text-black dark:text-white mb-2">View Functions</h3>
                 <div className="flex flex-col gap-3 text-xs font-mono">
                   <div className="flex flex-col gap-1">
-                    <code className="text-black">getOrder(uint256 orderId) → Order</code>
+                    <code className="text-black dark:text-white">getOrder(uint256 orderId) → Order</code>
                     <span className="text-neutral-400 font-sans">Returns the full order struct for a given ID.</span>
                   </div>
                   <div className="flex flex-col gap-1">
-                    <code className="text-black">getOrdersByPair(address tokenA, address tokenB, uint256 cursor, uint256 limit) → uint256[]</code>
+                    <code className="text-black dark:text-white">getOrdersByPair(address tokenA, address tokenB, uint256 cursor, uint256 limit) → uint256[]</code>
                     <span className="text-neutral-400 font-sans">Paginated list of order IDs for a token pair (max 500 per page).</span>
                   </div>
                   <div className="flex flex-col gap-1">
-                    <code className="text-black">currentPrice(uint256 orderId, uint256 timestamp) → uint256</code>
+                    <code className="text-black dark:text-white">currentPrice(uint256 orderId, uint256 timestamp) → uint256</code>
                     <span className="text-neutral-400 font-sans">Computes the order&apos;s price at a given timestamp using the price curve formula.</span>
                   </div>
                   <div className="flex flex-col gap-1">
-                    <code className="text-black">totalOrders() → uint256</code>
+                    <code className="text-black dark:text-white">totalOrders() → uint256</code>
                     <span className="text-neutral-400 font-sans">Total number of orders created (including inactive).</span>
                   </div>
                 </div>
@@ -236,11 +236,11 @@ export default function DocsPage() {
 
           {activeSection === 'deployment' && (
             <div data-reveal className="reveal-fade-up flex flex-col gap-6">
-              <h2 className="text-2xl font-extrabold text-black">Deployment Guide</h2>
+              <h2 className="text-2xl font-extrabold text-black dark:text-white">Deployment Guide</h2>
 
-              <div className="border border-neutral-100 rounded-2xl p-5">
-                <h3 className="text-sm font-bold text-black mb-3">Prerequisites</h3>
-                <div className="bg-neutral-50 rounded-xl p-4 font-mono text-xs text-black overflow-x-auto">
+              <div className="border border-neutral-100 dark:border-neutral-800 rounded-2xl p-5">
+                <h3 className="text-sm font-bold text-black dark:text-white mb-3">Prerequisites</h3>
+                <div className="bg-neutral-50 dark:bg-neutral-800/80 rounded-xl p-4 font-mono text-xs text-black dark:text-white overflow-x-auto">
                   <pre className="whitespace-pre">{`# Install Foundry
 curl -L https://foundry.paradigm.xyz | bash
 foundryup
@@ -252,9 +252,9 @@ anvil --version`}</pre>
                 </div>
               </div>
 
-              <div className="border border-neutral-100 rounded-2xl p-5">
-                <h3 className="text-sm font-bold text-black mb-3">Environment Setup</h3>
-                <div className="bg-neutral-50 rounded-xl p-4 font-mono text-xs text-black overflow-x-auto">
+              <div className="border border-neutral-100 dark:border-neutral-800 rounded-2xl p-5">
+                <h3 className="text-sm font-bold text-black dark:text-white mb-3">Environment Setup</h3>
+                <div className="bg-neutral-50 dark:bg-neutral-800/80 rounded-xl p-4 font-mono text-xs text-black dark:text-white overflow-x-auto">
                   <pre className="whitespace-pre">{`cp .env.example .env
 
 # Edit .env:
@@ -264,9 +264,9 @@ WETH_ADDRESS=0xC02a...     # Chain-specific WETH address`}</pre>
                 </div>
               </div>
 
-              <div className="border border-neutral-100 rounded-2xl p-5">
-                <h3 className="text-sm font-bold text-black mb-3">Deploy to Testnet</h3>
-                <div className="bg-neutral-50 rounded-xl p-4 font-mono text-xs text-black overflow-x-auto">
+              <div className="border border-neutral-100 dark:border-neutral-800 rounded-2xl p-5">
+                <h3 className="text-sm font-bold text-black dark:text-white mb-3">Deploy to Testnet</h3>
+                <div className="bg-neutral-50 dark:bg-neutral-800/80 rounded-xl p-4 font-mono text-xs text-black dark:text-white overflow-x-auto">
                   <pre className="whitespace-pre">{`# Deploy to Sepolia
 forge script script/DeployWindmill.s.sol \\
   --rpc-url sepolia \\
@@ -282,9 +282,9 @@ forge script script/DeployWindmill.s.sol \\
                 </div>
               </div>
 
-              <div className="border border-neutral-100 rounded-2xl p-5">
-                <h3 className="text-sm font-bold text-black mb-3">Deploy to Mainnet</h3>
-                <div className="bg-neutral-50 rounded-xl p-4 font-mono text-xs text-black overflow-x-auto">
+              <div className="border border-neutral-100 dark:border-neutral-800 rounded-2xl p-5">
+                <h3 className="text-sm font-bold text-black dark:text-white mb-3">Deploy to Mainnet</h3>
+                <div className="bg-neutral-50 dark:bg-neutral-800/80 rounded-xl p-4 font-mono text-xs text-black dark:text-white overflow-x-auto">
                   <pre className="whitespace-pre">{`# Ethereum Mainnet
 forge script script/DeployWindmill.s.sol \\
   --rpc-url ethereum --broadcast --verify -vvvv
@@ -299,8 +299,8 @@ forge script script/DeployWindmill.s.sol \\
                 </div>
               </div>
 
-              <div className="border border-neutral-100 rounded-2xl p-5">
-                <h3 className="text-sm font-bold text-black mb-3">Post-Deployment</h3>
+              <div className="border border-neutral-100 dark:border-neutral-800 rounded-2xl p-5">
+                <h3 className="text-sm font-bold text-black dark:text-white mb-3">Post-Deployment</h3>
                 <ol className="flex flex-col gap-2 text-xs text-neutral-600 list-decimal pl-5">
                   <li>Record the deployed contract address from console output</li>
                   <li>Set <code className="bg-neutral-100 px-1 py-0.5 rounded">NEXT_PUBLIC_CONTRACT_ADDRESS_*</code> in the WebUI .env</li>
@@ -313,14 +313,14 @@ forge script script/DeployWindmill.s.sol \\
 
           {activeSection === 'keeper' && (
             <div data-reveal className="reveal-fade-up flex flex-col gap-6">
-              <h2 className="text-2xl font-extrabold text-black">Keeper Integration Guide</h2>
+              <h2 className="text-2xl font-extrabold text-black dark:text-white">Keeper Integration Guide</h2>
               <p>
                 The keeper service is a headless Node.js application that monitors the WindmillExchange contract for
                 matchable orders and executes settlement transactions to earn fees.
               </p>
 
-              <div className="border border-neutral-100 rounded-2xl p-5">
-                <h3 className="text-sm font-bold text-black mb-2">Strategy: Windmill</h3>
+              <div className="border border-neutral-100 dark:border-neutral-800 rounded-2xl p-5">
+                <h3 className="text-sm font-bold text-black dark:text-white mb-2">Strategy: Windmill</h3>
                 <p className="text-xs text-neutral-500 mb-3">
                   The <code className="bg-neutral-100 px-1 py-0.5 rounded">windmill</code> strategy implements:
                 </p>
@@ -333,8 +333,8 @@ forge script script/DeployWindmill.s.sol \\
                 </ol>
               </div>
 
-              <div className="border border-neutral-100 rounded-2xl p-5">
-                <h3 className="text-sm font-bold text-black mb-2">Configuration Reference</h3>
+              <div className="border border-neutral-100 dark:border-neutral-800 rounded-2xl p-5">
+                <h3 className="text-sm font-bold text-black dark:text-white mb-2">Configuration Reference</h3>
                 <div className="overflow-x-auto">
                   <table className="w-full text-xs">
                     <thead>
@@ -363,15 +363,15 @@ forge script script/DeployWindmill.s.sol \\
 
           {activeSection === 'networks' && (
             <div data-reveal className="reveal-fade-up flex flex-col gap-6">
-              <h2 className="text-2xl font-extrabold text-black">Supported Networks</h2>
+              <h2 className="text-2xl font-extrabold text-black dark:text-white">Supported Networks</h2>
               <p>
                 Pre-configured RPC endpoints and deployment targets. Contract addresses are populated after deployment.
               </p>
 
-              <div className="border border-neutral-100 rounded-2xl overflow-hidden">
+              <div className="border border-neutral-100 dark:border-neutral-800 rounded-2xl overflow-hidden">
                 <table className="w-full text-xs">
                   <thead>
-                    <tr className="bg-neutral-50 text-neutral-400 uppercase tracking-wider text-[10px] font-bold">
+                    <tr className="bg-neutral-50 dark:bg-neutral-800/80 text-neutral-400 uppercase tracking-wider text-[10px] font-bold">
                       <th className="text-left p-3">Network</th>
                       <th className="text-left p-3">Chain ID</th>
                       <th className="text-left p-3">Type</th>
@@ -381,8 +381,8 @@ forge script script/DeployWindmill.s.sol \\
                   </thead>
                   <tbody>
                     {Object.values(SUPPORTED_CHAINS).map((chain) => (
-                      <tr key={chain.chainId} className="border-t border-neutral-50 hover:bg-neutral-50/50">
-                        <td className="p-3 font-semibold text-black">{chain.name}</td>
+                      <tr key={chain.chainId} className="border-t border-neutral-100 dark:border-neutral-800 hover:bg-neutral-50/50 dark:hover:bg-neutral-800/50">
+                        <td className="p-3 font-semibold text-black dark:text-white">{chain.name}</td>
                         <td className="p-3 font-mono text-neutral-500">{chain.chainId}</td>
                         <td className="p-3 text-neutral-500">{chain.chainId === 11155111 || chain.chainId === 63 ? 'Testnet' : 'Mainnet'}</td>
                         <td className="p-3 text-neutral-400 font-mono text-[10px] max-w-[200px] truncate">{chain.rpcUrl}</td>

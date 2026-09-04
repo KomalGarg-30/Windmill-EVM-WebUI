@@ -183,7 +183,6 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
       const targetChainId = networkNameToChainId(newNetwork);
       switchChainInternal(targetChainId);
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     []
   );
 
@@ -235,7 +234,6 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
 
   const switchChain = useCallback(async (targetChainId: number) => {
     await switchChainInternal(targetChainId);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // ── Context Value ─────────────────────────────────────────────────
