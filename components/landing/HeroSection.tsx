@@ -1,197 +1,111 @@
 'use client';
 
-import React from 'react';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
+import { ArrowRight, CheckCircle2, Zap } from 'lucide-react';
 import StatsPanel from '@/components/landing/StatsPanel';
-import { Zap } from 'lucide-react';
+import ThemeSwitcher from '@/components/landing/ThemeSwitcher';
+import { useWallet } from '@/context/WalletContext';
 
-/* ── Framer Motion Variants ─────────────────────────────────────── */
+function CurvePanel({ sell = false }: { sell?: boolean }) {
+  const heights = sell ? ['1.5rem', '2.5rem', '3.5rem', '4.5rem', '6rem'] : ['6rem', '4.5rem', '3.5rem', '2.5rem', '1.5rem'];
 
-const ease = [0.16, 1, 0.3, 1] as const;
-
-const fadeSlideUp = (delay: number) => ({
-  hidden: { opacity: 0, y: 28 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.9, ease, delay },
-  },
-});
-
-const containerVariants = {
-  hidden: {},
-  visible: {
-    transition: { staggerChildren: 0.15, delayChildren: 0.1 },
-  },
-};
-
-/* ── Sub-components ─────────────────────────────────────────────── */
-
-function BuyCurvePanel() {
   return (
-    <div className="flex-1 w-full flex flex-col gap-3 p-4 bg-neutral-50/50 rounded-xl border border-black/5 shadow-sm">
-      <div className="flex justify-between items-center">
-        <span className="text-[10px] font-bold text-neutral-800">BUY ORDER CURVE</span>
-        <span className="text-[9px] px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 font-semibold">
-          s &lt; 0
-        </span>
+    <div className="flex min-w-0 flex-1 flex-col gap-3 border border-white/10 bg-black/40 p-5">
+      <div className="flex items-center justify-between gap-3 font-mono text-[10px]">
+        <span className="font-bold text-white">{sell ? 'SELL' : 'BUY'} ORDER CURVE</span>
+        <span className="text-accent">s {sell ? '>' : '<'} 0</span>
       </div>
-      <div className="h-20 flex items-end justify-between gap-1 pt-6 border-b border-dashed border-black/5 relative">
-        <div className="absolute inset-0 flex flex-col justify-between pointer-events-none opacity-5">
-          <div className="border-b border-black/5 w-full" />
-          <div className="border-b border-black/5 w-full" />
-        </div>
-        <div className="w-full h-16 bg-black rounded-t-sm opacity-100" />
-        <div className="w-full h-12 bg-black rounded-t-sm opacity-80" />
-        <div className="w-full h-9 bg-black rounded-t-sm opacity-60" />
-        <div className="w-full h-6 bg-black rounded-t-sm opacity-30" />
+      <div className="flex h-28 items-end gap-2 border-b border-dashed border-white/10">
+        {heights.map((height, index) => (
+          <div key={`${sell ? 'sell' : 'buy'}-${index}`} className="w-full rounded-t-sm bg-accent" style={{ height, opacity: sell ? (index + 1) * 0.2 : 1 - index * 0.2 }} />
+        ))}
       </div>
-      <div className="flex justify-between text-[9px] text-neutral-400 font-mono mt-1">
+      <div className="flex justify-between gap-3 font-mono text-[10px] text-muted-foreground">
         <span>P(t) = P₀ + s·t</span>
-        <span>Decreasing Bid</span>
+        <span className="text-accent">{sell ? 'Increasing Ask' : 'Decreasing Bid'}</span>
       </div>
     </div>
   );
 }
 
-function SellCurvePanel() {
+function MatchingEngine() {
   return (
-    <div className="flex-1 w-full flex flex-col gap-3 p-4 bg-neutral-50/50 rounded-xl border border-black/5 shadow-sm">
-      <div className="flex justify-between items-center">
-        <span className="text-[10px] font-bold text-neutral-800">SELL ORDER CURVE</span>
-        <span className="text-[9px] px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 font-semibold">
-          s &gt; 0
-        </span>
-      </div>
-      <div className="h-20 flex items-end justify-between gap-1 pt-6 border-b border-dashed border-black/5 relative">
-        <div className="absolute inset-0 flex flex-col justify-between pointer-events-none opacity-5">
-          <div className="border-b border-black/5 w-full" />
-          <div className="border-b border-black/5 w-full" />
-        </div>
-        <div className="w-full h-6 bg-neutral-300 rounded-t-sm opacity-40" />
-        <div className="w-full h-9 bg-neutral-400 rounded-t-sm opacity-60" />
-        <div className="w-full h-12 bg-neutral-500 rounded-t-sm opacity-80" />
-        <div className="w-full h-16 bg-neutral-700 rounded-t-sm opacity-90" />
-      </div>
-      <div className="flex justify-between text-[9px] text-neutral-400 font-mono mt-1">
-        <span>P(t) = P₀ + s·t</span>
-        <span>Increasing Ask</span>
-      </div>
-    </div>
-  );
-}
-
-function MockInterfacePanel() {
-  return (
-    <motion.div
-      variants={fadeSlideUp(0.55)}
-      className="relative w-full max-w-3xl rounded-2xl border border-black/5 bg-neutral-50/50 p-2 shadow-xl backdrop-blur-md pointer-events-auto transform rotate-x-6 rotate-y-[-3deg] transition-all duration-700 hover:rotate-x-0 hover:rotate-y-0 hover:scale-[1.01]"
-    >
-      <div className="rounded-xl border border-black/10 bg-white overflow-hidden shadow-inner aspect-[16/9] flex flex-col">
-        {/* Mock header */}
-        <div className="flex items-center justify-between px-4 py-2.5 border-b border-black/5 bg-neutral-50">
-          <div className="flex gap-1.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-black/10" />
-            <span className="w-2.5 h-2.5 rounded-full bg-black/10" />
-            <span className="w-2.5 h-2.5 rounded-full bg-black/10" />
-          </div>
-          <span className="text-[10px] font-mono text-neutral-400 tracking-wider">solver-match-node</span>
-          <div className="w-4" />
-        </div>
-
-        {/* Live Pricing Curves Diagram */}
-        <div className="flex-1 p-6 flex flex-col sm:flex-row gap-6 items-center justify-center bg-white">
-          <BuyCurvePanel />
-
-          {/* Connecting Match Action */}
-          <div className="flex flex-col items-center justify-center gap-1 shrink-0">
-            <div className="h-8 w-8 rounded-full bg-black text-white flex items-center justify-center shadow-lg font-mono font-bold text-xs">
-              <Zap className="w-3.5 h-3.5 fill-current text-white" />
+    <section id="matching-engine" className="border-t border-white/10 bg-black/60 px-6 py-16">
+      <div className="mx-auto max-w-5xl">
+        <div className="cyber-panel p-5 sm:p-8">
+          <div className="mb-6 flex items-center justify-between border-b border-white/10 pb-4">
+            <span className="font-mono text-xs font-bold uppercase tracking-widest text-accent">solver-match-node</span>
+            <div className="flex gap-1.5" aria-hidden="true">
+              <span className="h-2.5 w-2.5 rounded-full bg-white/20" />
+              <span className="h-2.5 w-2.5 rounded-full bg-white/20" />
+              <span className="h-2.5 w-2.5 rounded-full bg-accent" />
             </div>
-            <span className="text-[9px] font-bold tracking-widest text-neutral-800 uppercase mt-1">SWEEP</span>
           </div>
-
-          <SellCurvePanel />
+          <div className="grid items-center gap-5 md:grid-cols-[1fr_auto_1fr]">
+            <CurvePanel />
+            <div className="flex flex-col items-center gap-2 text-accent">
+              <div className="flex h-12 w-12 items-center justify-center border border-accent shadow-[0_0_24px_var(--accent-glow)]">
+                <Zap className="h-5 w-5 fill-current" aria-hidden="true" />
+              </div>
+              <span className="font-mono text-[10px] font-bold uppercase tracking-widest">SWEEP</span>
+            </div>
+            <CurvePanel sell />
+          </div>
         </div>
       </div>
-    </motion.div>
+    </section>
   );
 }
-
-/* ── Main Component ─────────────────────────────────────────────── */
 
 export default function HeroSection() {
+  const { isConnected, network } = useWallet();
+
   return (
-    <section
-      id="home"
-      className="relative min-h-screen flex items-center justify-center overflow-hidden bg-white pt-32 pb-16 bg-light-mesh"
-    >
-      {/* Ambient soft glow spots */}
-      <div className="absolute top-1/4 left-1/4 -translate-x-1/2 w-[60vw] h-[60vw] glow-spot-light-1 rounded-full opacity-[0.4] blur-3xl pointer-events-none animate-pulse-slow" />
-      <div className="absolute bottom-1/4 right-1/4 translate-x-1/2 w-[50vw] h-[50vw] glow-spot-light-2 rounded-full opacity-[0.3] blur-3xl pointer-events-none animate-pulse-slow" />
-
-      {/* Floating 3D Geometric Accents */}
-      <div className="absolute left-[8%] top-[25%] hidden lg:block animate-float pointer-events-none">
-        <div className="w-14 h-14 border border-black/10 rounded-xl transform rotate-12 rotate-x-45 rotate-y-12 transition-transform duration-500 hover:border-black/30" />
-      </div>
-      <div className="absolute right-[10%] bottom-[20%] hidden lg:block animate-float-delayed pointer-events-none">
-        <div className="w-16 h-16 border border-black/10 rounded-full border-dashed transform -rotate-12 transition-transform duration-500 hover:scale-110" />
-      </div>
-
-      <motion.div
-        className="relative mx-auto max-w-4xl px-6 md:px-8 text-center flex flex-col items-center justify-center"
-        variants={containerVariants}
-        initial="hidden"
-        animate="visible"
-      >
-        {/* Heading */}
-        <motion.h1
-          variants={fadeSlideUp(0.1)}
-          className="font-sans text-3xl sm:text-5xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-black max-w-3xl leading-[1.15] mb-6"
-        >
-          The Decentralized{' '}
-          <span className="relative inline-block text-transparent bg-clip-text bg-gradient-to-r from-black via-neutral-700 to-neutral-500">
-            Matchmaking
-          </span>{' '}
-          Protocol for EVM.
-        </motion.h1>
-
-        {/* Description */}
-        <motion.p
-          variants={fadeSlideUp(0.25)}
-          className="font-sans text-sm sm:text-base text-neutral-500 max-w-xl leading-relaxed mb-10"
-        >
-          A high-efficiency dynamic orderbook matching engine running entirely on-chain. Configure price slopes; let solvers settle automatically.
-        </motion.p>
-
-        {/* CTAs */}
-        <motion.div
-          variants={fadeSlideUp(0.4)}
-          className="flex flex-col sm:flex-row gap-4 items-center justify-center mb-10 w-full sm:w-auto"
-        >
-          <Link
-            href="/dashboard"
-            className="btn-premium-dark w-full sm:w-auto hover:scale-105 active:scale-[0.98] transition-all cursor-pointer shadow-sm"
-          >
-            Launch Exchange
-          </Link>
-          <Link
-            href="/docs"
-            className="btn-premium-light w-full sm:w-auto cursor-pointer"
-          >
-            Docs / API Reference
-          </Link>
-        </motion.div>
-
-        {/* Stats Panel */}
-        <motion.div variants={fadeSlideUp(0.55)} className="w-full mb-16">
-          <StatsPanel />
-        </motion.div>
-
-        {/* 3D Visual Mock Interface Panel */}
-        <MockInterfacePanel />
-      </motion.div>
-    </section>
+    <>
+      <section id="home" className="relative overflow-hidden bg-surface px-6 pb-16 pt-36 sm:pt-40">
+        <div className="absolute inset-0 cyber-grid opacity-70" aria-hidden="true" />
+        <div className="hero-spotlight" aria-hidden="true" />
+        <div className="relative mx-auto grid max-w-6xl items-center gap-14 lg:grid-cols-[1.15fr_0.85fr]">
+          <div className="max-w-2xl">
+            <div className="mb-6 inline-flex items-center gap-2 border border-accent/40 bg-accent/10 px-3 py-1.5 font-mono text-[10px] font-bold uppercase tracking-widest text-accent">
+              <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-accent" /> Decentralized. Efficient. Built for EVM.
+            </div>
+            <h1 className="font-heading text-4xl font-bold leading-[1.08] tracking-tight text-white sm:text-6xl lg:text-7xl">
+              The Decentralized <span className="text-glow text-accent">Matchmaking</span> Protocol for EVM.
+            </h1>
+            <p className="mt-6 max-w-xl text-base leading-relaxed text-muted-foreground sm:text-lg">
+              A high-efficiency dynamic orderbook matching engine running entirely on-chain. Configure price slopes; let solvers settle automatically.
+            </p>
+            <div className="mt-9 flex flex-col gap-3 sm:flex-row">
+              <Link href="/dashboard" className="button-primary"><span>Launch Exchange</span><ArrowRight className="h-4 w-4" /></Link>
+              <Link href="/docs" className="button-secondary">Docs / API Reference</Link>
+            </div>
+            <div className="mt-10 flex flex-wrap gap-x-6 gap-y-3 font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+              <span className="inline-flex items-center gap-2"><CheckCircle2 className="h-3.5 w-3.5 text-accent" /> Non-custodial</span>
+              <span className="inline-flex items-center gap-2"><CheckCircle2 className="h-3.5 w-3.5 text-accent" /> Permissionless</span>
+              <span className="inline-flex items-center gap-2"><CheckCircle2 className="h-3.5 w-3.5 text-accent" /> On-chain settlement</span>
+            </div>
+          </div>
+          <div className="relative flex min-h-[330px] items-center justify-center">
+            <div className="absolute right-0 top-0 border border-accent/30 bg-surface/90 p-4 font-mono text-[10px] text-muted-foreground shadow-xl backdrop-blur-md">
+              <div className="flex justify-between gap-8"><span>STATUS</span><span className="text-accent">{isConnected ? 'CONNECTED' : 'READY'}</span></div>
+              <div className="mt-2 flex justify-between gap-8"><span>NETWORK</span><span className="text-accent">{isConnected ? network.toUpperCase() : 'EVM'}</span></div>
+              <div className="mt-2 flex justify-between gap-8"><span>SETTLEMENT</span><span className="text-accent">ON-CHAIN</span></div>
+            </div>
+            <div className="relative flex h-64 w-64 items-center justify-center sm:h-80 sm:w-80">
+              <div className="absolute inset-0 rounded-full border border-accent/20 animate-spin-slow" />
+              <div className="absolute inset-8 rounded-full border border-dashed border-accent/30 animate-spin-reverse" />
+              <div className="absolute inset-16 rounded-full border border-accent/20" />
+              <div className="relative flex h-28 w-28 items-center justify-center border border-accent/60 bg-accent/10 shadow-[0_0_45px_var(--accent-glow)] sm:h-36 sm:w-36">
+                <img src="/windmill-logo.svg" alt="Windmill Exchange" width={96} height={96} className="h-20 w-20 object-contain sm:h-24 sm:w-24" />
+              </div>
+            </div>
+            <ThemeSwitcher />
+          </div>
+        </div>
+        <div id="stats" className="relative mx-auto mt-14 max-w-5xl"><StatsPanel /></div>
+      </section>
+      <MatchingEngine />
+    </>
   );
 }

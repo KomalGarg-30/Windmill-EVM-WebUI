@@ -1,8 +1,13 @@
+'use client';
+
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
 export default function Footer() {
+  const isHomepage = usePathname() === '/';
+
   return (
-    <footer className="bg-neutral-950 text-neutral-400 py-16 border-t border-neutral-800">
+    <footer className={`py-16 text-neutral-400 border-t ${isHomepage ? 'border-accent/20 bg-surface' : 'border-neutral-800 bg-neutral-950'}`}>
       <div className="mx-auto max-w-7xl px-6 md:px-8">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-10 md:gap-8 mb-12">
           {/* Brand Info */}
@@ -26,7 +31,7 @@ export default function Footer() {
                 <a href="#features" className="text-sm hover:text-white transition-colors">Features</a>
               </li>
               <li>
-                <a href="#how-it-works" className="text-sm hover:text-white transition-colors">How It Works</a>
+                <Link href="/how-it-works" className="text-sm hover:text-white transition-colors">How It Works</Link>
               </li>
               <li>
                 <a href="#stats" className="text-sm hover:text-white transition-colors">Statistics</a>

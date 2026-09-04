@@ -2,7 +2,7 @@
 
 /* ═══════════════════════════════════════════════════════════════
    WINDMILL EXCHANGE — Design System
-   Premium Black & White Theme (White Background)
+  Windmill Exchange — Matrix Cyber Green homepage tokens
    ═══════════════════════════════════════════════════════════════ */
 
 @theme inline {
@@ -12,8 +12,13 @@
   --color-brand-dark: #e5b015;
   --color-brand-green: #228b22;
   --color-brand-green-light: #22c55e;
-  --font-sans: var(--font-sans);
-  --font-heading: var(--font-sans);
+  --color-accent: var(--accent);
+  --color-surface: var(--surface);
+  --color-panel: var(--panel);
+  --color-muted-foreground: var(--muted-foreground);
+  --font-sans: var(--font-jakarta);
+  --font-heading: var(--font-space);
+  --font-mono: var(--font-jetbrains);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -58,12 +63,81 @@ html {
   scroll-behavior: smooth;
 }
 
+:root {
+  --surface: #050806;
+  --panel: #09120c;
+  --accent: #228b22;
+  --accent-glow: rgba(34, 139, 34, 0.3);
+  --accent-soft: rgba(34, 139, 34, 0.3);
+  --accent-faint: rgba(34, 139, 34, 0.12);
+  --accent-spotlight: rgba(34, 139, 34, 0.12);
+  --muted-foreground: #8b9b90;
+}
+
+.bg-surface { background-color: var(--surface); }
+.bg-panel { background-color: var(--panel); }
+.text-accent { color: var(--accent); }
+.border-accent { border-color: var(--accent); }
+.text-muted-foreground { color: var(--muted-foreground); }
+.cyber-grid {
+  background-image: linear-gradient(to right, rgba(255, 255, 255, 0.045) 1px, transparent 1px), linear-gradient(to bottom, rgba(255, 255, 255, 0.045) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+.hero-spotlight {
+  position: absolute;
+  top: 4rem;
+  right: 8%;
+  width: 34rem;
+  height: 34rem;
+  border-radius: 9999px;
+  background: radial-gradient(circle, var(--accent-spotlight), transparent 68%);
+  filter: blur(20px);
+  pointer-events: none;
+}
+.cyber-panel {
+  background: rgba(9, 18, 12, 0.84);
+  border: 1px solid var(--accent-soft);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+.cyber-card {
+  clip-path: polygon(0 10px, 10px 0, calc(100% - 10px) 0, 100% 10px, 100% calc(100% - 10px), calc(100% - 10px) 100%, 10px 100%, 0 calc(100% - 10px));
+}
+.text-glow { text-shadow: 0 0 16px var(--accent-glow); }
+.button-primary, .button-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 2.9rem;
+  padding: 0.75rem 1.5rem;
+  font-family: var(--font-jetbrains), monospace;
+  font-size: 0.7rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  transition: transform 180ms ease, box-shadow 180ms ease, background-color 180ms ease;
+}
+.button-primary { color: #031007; background: var(--accent); box-shadow: 0 0 24px var(--accent-glow); }
+.button-primary:hover { transform: translateY(-2px); box-shadow: 0 0 34px var(--accent-soft); }
+.button-secondary { color: white; border: 1px solid rgba(255, 255, 255, 0.18); background: rgba(0, 0, 0, 0.45); }
+.button-secondary:hover { transform: translateY(-2px); border-color: var(--accent); }
+
+@keyframes spin-reverse { to { transform: rotate(-360deg); } }
+.animate-spin-reverse { animation: spin-reverse 24s linear infinite; }
+.animate-spin-slow { animation: spin 30s linear infinite; }
+
 body {
   background-color: #ffffff;
   color: #0a0a0a;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
+}
+
+html:has(body main.bg-surface),
+body:has(main.bg-surface) {
+  background-color: var(--surface);
 }
 
 ::selection {
@@ -85,6 +159,22 @@ body {
 }
 ::-webkit-scrollbar-thumb:hover {
   background: #a3a3a3;
+}
+
+html:has(body main.bg-surface) {
+  scrollbar-color: #26332a var(--surface);
+}
+
+html:has(body main.bg-surface) ::-webkit-scrollbar-track {
+  background: var(--surface);
+}
+
+html:has(body main.bg-surface) ::-webkit-scrollbar-thumb {
+  background: #26332a;
+}
+
+html:has(body main.bg-surface) ::-webkit-scrollbar-thumb:hover {
+  background: #3d5745;
 }
 
 /* ── Premium Background patterns ───────────────────────────────── */
@@ -402,4 +492,32 @@ body {
   .animate-pulse-slow {
     animation: none;
   }
+
+  .animate-spin-slow,
+  .animate-spin-reverse {
+    animation: none;
+  }
+}
+
+.homepage-nav .glass-pill,
+.homepage-nav .relative.z-\[60\] {
+  background: rgba(9, 18, 12, 0.86) !important;
+  border: 1px solid var(--accent-soft) !important;
+  box-shadow: 0 0 28px var(--accent-faint) !important;
+  color: white;
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+.homepage-nav .relative.z-\[60\] > div > a {
+  color: #b7c2ba;
+}
+.homepage-nav .relative.z-\[60\] > div > a:hover {
+  color: white;
+}
+.homepage-nav .relative.z-\[60\] > div > a > div {
+  background: var(--accent-faint);
+}
+.homepage-nav button[aria-label] svg,
+.homepage-nav button svg {
+  color: var(--accent);
 }

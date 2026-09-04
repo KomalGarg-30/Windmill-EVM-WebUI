@@ -1,17 +1,18 @@
 import type { Metadata, Viewport } from 'next';
-import { Inter, Geist } from 'next/font/google';
+import { JetBrains_Mono, Plus_Jakarta_Sans, Space_Grotesk } from 'next/font/google';
 import './globals.css';
 import { WalletProvider } from '@/context/WalletContext';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import { cn } from "@/lib/utils";
 
-const geist = Geist({ subsets: ['latin'], variable: '--font-sans' });
-
-const inter = Inter({
-  variable: '--font-inter',
+const jakarta = Plus_Jakarta_Sans({
+  variable: '--font-jakarta',
   subsets: ['latin'],
 });
+
+const spaceGrotesk = Space_Grotesk({ variable: '--font-space', subsets: ['latin'] });
+const jetBrains = JetBrains_Mono({ variable: '--font-jetbrains', subsets: ['latin'] });
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://windmill.aossie.org'),
@@ -70,7 +71,7 @@ export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
   maximumScale: 5,
-  themeColor: '#ffffff',
+  themeColor: '#050806',
 };
 
 export default function RootLayout({
@@ -79,8 +80,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={cn("scroll-smooth", "font-sans", geist.variable)}>
-      <body className={`${inter.variable} antialiased min-h-screen bg-white text-black`}>
+    <html lang="en" className={cn('scroll-smooth', jakarta.variable, spaceGrotesk.variable, jetBrains.variable)}>
+      <body className="antialiased min-h-screen bg-white text-black">
         <WalletProvider>
           <Navbar />
           {children}

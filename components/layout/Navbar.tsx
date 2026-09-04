@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { useWallet } from '@/context/WalletContext';
 import {
   Navbar as BaseNavbar,
@@ -15,6 +16,8 @@ import {
 } from '@/components/ui/resizable-navbar';
 
 export default function Navbar() {
+  const pathname = usePathname();
+  const isHomepage = pathname === '/';
   const { isConnected, address, network, setWalletModalOpen, disconnectWallet, switchNetwork } = useWallet();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [networkDropdownOpen, setNetworkDropdownOpen] = useState(false);
@@ -32,14 +35,14 @@ export default function Navbar() {
   ];
 
   return (
-<div className="fixed top-6 left-0 right-0 z-50 flex justify-center w-full pointer-events-none">
-      <BaseNavbar className="w-full max-w-6xl px-4 pointer-events-auto">
+<div className={`fixed top-6 left-0 right-0 z-50 flex justify-center w-full pointer-events-none ${isHomepage ? 'homepage-nav' : ''}`}>
+  <BaseNavbar className="w-full max-w-6xl px-4 pointer-events-auto">
         {/* Desktop Navigation using resizable NavBody */}
         <NavBody>
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 group cursor-pointer mr-6 shrink-0">
             <img src="/windmill-logo.svg" alt="Windmill" width={32} height={32} className="shrink-0" />
-            <span className="font-sans text-sm font-bold tracking-tight text-black">
+            <span className={`font-sans text-sm font-bold tracking-tight ${isHomepage ? 'text-white' : 'text-black'}`}>
               WINDMILL
             </span>
           </Link>
@@ -56,13 +59,13 @@ export default function Navbar() {
                   <button
                     type="button"
                     onClick={() => setNetworkDropdownOpen(!networkDropdownOpen)}
-                    className="flex items-center gap-1.5 rounded-full border border-neutral-200 bg-neutral-50 px-3 py-1.5 text-[10px] font-bold hover:bg-neutral-100 transition-colors uppercase tracking-wider text-black cursor-pointer"
+                    className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[10px] font-bold transition-colors uppercase tracking-wider cursor-pointer ${isHomepage ? 'border-accent/40 bg-panel text-white hover:bg-white/10' : 'border-neutral-200 bg-neutral-50 text-black hover:bg-neutral-100'}`}
                   >
-                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                    <span className={`h-1.5 w-1.5 rounded-full ${isHomepage ? 'bg-accent' : 'bg-emerald-500'}`} />
                     {network} ▾
                   </button>
                   {networkDropdownOpen && (
-                    <div className="absolute right-0 mt-2 w-32 rounded-2xl border border-neutral-200 bg-white p-1.5 shadow-2xl z-50">
+                    <div className={`absolute right-0 mt-2 w-32 rounded-2xl p-1.5 shadow-2xl z-50 ${isHomepage ? 'border border-accent/30 bg-panel' : 'border border-neutral-200 bg-white'}`}>
                       {networks.map((net) => (
                         <button
                           key={net}
@@ -71,7 +74,7 @@ export default function Navbar() {
                             switchNetwork(net);
                             setNetworkDropdownOpen(false);
                           }}
-                          className="w-full text-left rounded-xl px-3 py-1.5 text-[10px] font-semibold hover:bg-neutral-50 text-black transition-colors"
+                          className={`w-full text-left rounded-xl px-3 py-1.5 text-[10px] font-semibold transition-colors ${isHomepage ? 'text-white hover:bg-white/10' : 'text-black hover:bg-neutral-50'}`}
                         >
                           {net}
                         </button>
@@ -84,7 +87,7 @@ export default function Navbar() {
                 <NavbarButton
                   onClick={disconnectWallet}
                   variant="dark"
-                  className="rounded-full !px-4 !py-1.5 text-[10px] font-bold text-white bg-black hover:bg-neutral-800 transition-colors border-none"
+                  className={`rounded-full !px-4 !py-1.5 text-[10px] font-bold transition-colors border-none ${isHomepage ? 'bg-accent text-black hover:bg-accent/80' : 'text-white bg-black hover:bg-neutral-800'}`}
                 >
                   {address}
                 </NavbarButton>
@@ -93,7 +96,7 @@ export default function Navbar() {
               <NavbarButton
                 onClick={() => setWalletModalOpen(true)}
                 variant="dark"
-                className="rounded-full !px-4 !py-1.5 text-[10px] font-bold text-white bg-black hover:bg-neutral-800 transition-all duration-300 border-none shadow-sm"
+                className={`rounded-full !px-4 !py-1.5 text-[10px] font-bold transition-all duration-300 border-none shadow-sm ${isHomepage ? 'bg-accent text-black hover:bg-accent/80' : 'text-white bg-black hover:bg-neutral-800'}`}
               >
                 Connect Wallet
               </NavbarButton>
@@ -107,7 +110,7 @@ export default function Navbar() {
             {/* Logo */}
             <Link href="/" className="flex items-center gap-2">
               <img src="/windmill-logo.svg" alt="Windmill" width={28} height={28} className="shrink-0" />
-              <span className="font-sans text-sm font-bold tracking-tight text-black">
+              <span className={`font-sans text-sm font-bold tracking-tight ${isHomepage ? 'text-white' : 'text-black'}`}>
                 WINDMILL
               </span>
             </Link>
@@ -120,7 +123,7 @@ export default function Navbar() {
           <MobileNavMenu
             isOpen={isMobileMenuOpen}
             onClose={() => setIsMobileMenuOpen(false)}
-            className="bg-white/95 border border-neutral-100/50 backdrop-blur-xl p-6 rounded-2xl shadow-xl mt-4"
+            className={isHomepage ? 'bg-panel/95 border border-accent/20 backdrop-blur-xl p-6 rounded-2xl shadow-xl mt-4' : 'bg-white/95 border border-neutral-100/50 backdrop-blur-xl p-6 rounded-2xl shadow-xl mt-4'}
           >
             <div className="flex flex-col gap-4 w-full">
               {navItems.map((item) => (
@@ -128,18 +131,18 @@ export default function Navbar() {
                   key={item.name}
                   href={item.link}
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className="text-neutral-600 hover:text-black font-semibold text-sm transition-colors py-1"
+                  className={`font-semibold text-sm transition-colors py-1 ${isHomepage ? 'text-neutral-300 hover:text-white' : 'text-neutral-600 hover:text-black'}`}
                 >
                   {item.name}
                 </Link>
               ))}
 
-              <div className="h-[1px] bg-neutral-100 my-2" />
+              <div className={`h-[1px] my-2 ${isHomepage ? 'bg-white/10' : 'bg-neutral-100'}`} />
 
               {/* Wallet Button */}
               {isConnected ? (
                 <div className="flex flex-col gap-3">
-                  <div className="flex justify-between items-center text-xs font-bold text-black border border-neutral-100 rounded-xl px-4 py-2.5 bg-neutral-50">
+                  <div className={`flex justify-between items-center text-xs font-bold rounded-xl px-4 py-2.5 ${isHomepage ? 'text-white border border-white/10 bg-white/5' : 'text-black border border-neutral-100 bg-neutral-50'}`}>
                     <span>Network</span>
                     <span className="text-neutral-500 uppercase tracking-wider">{network}</span>
                   </div>
