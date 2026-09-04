@@ -76,7 +76,7 @@ export const NavBody = ({ children, className, visible }: NavBodyProps) => {
         transition: 'width 0.4s cubic-bezier(0.16, 1, 0.3, 1), transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease',
       }}
       className={cn(
-        'relative z-[60] mx-auto hidden w-full grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-5 rounded-full px-8 py-4 xl:grid',
+        'relative z-[60] mx-auto hidden w-full grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-5 rounded-full px-8 py-2 xl:grid',
         visible
           ? 'w-[92%] max-w-7xl glass-pill shadow-lg translate-y-4'
           : 'w-full max-w-7xl bg-transparent border-transparent translate-y-0',
@@ -130,7 +130,7 @@ export const MobileNav = ({ children, className, visible }: MobileNavProps) => {
         transition: 'width 0.4s cubic-bezier(0.16, 1, 0.3, 1), transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease',
       }}
       className={cn(
-        'relative z-50 mx-auto flex w-full max-w-[calc(100vw-2rem)] flex-col items-center justify-between bg-transparent px-6 py-5 xl:hidden rounded-full',
+        'relative z-50 mx-auto flex w-full max-w-[calc(100vw-2rem)] flex-col items-center justify-between bg-transparent px-6 py-3 xl:hidden rounded-full',
         visible 
           ? 'w-[92%] glass-pill shadow-lg translate-y-4'
           : 'w-full bg-transparent border-transparent translate-y-0',
