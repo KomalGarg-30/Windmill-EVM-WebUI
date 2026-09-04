@@ -51,7 +51,7 @@ export default function Navbar() {
           <NavItems items={navItems} />
 
           {/* Wallet Actions / RainbowKit simulation */}
-          <div className="flex items-center gap-3 shrink-0 ml-6">
+          <div className="ml-6 flex shrink-0 items-center justify-self-end gap-3">
             {isConnected ? (
               <div className="flex items-center gap-2">
                 {/* Network select indicator */}
